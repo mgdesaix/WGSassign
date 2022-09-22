@@ -18,7 +18,7 @@ conda env create -f environment.yml
 ## Install and build
 ```bash
 git clone https://github.com/mgdesaix/WGSassign.git
-cd pcangsd
+cd WGSassign
 python setup.py build_ext --inplace
 pip3 install -e .
 ```
