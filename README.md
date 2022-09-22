@@ -34,11 +34,11 @@ WGSassign works directly on genotype likelihood files. Beagle genotype likelihoo
 ```bash
 # Estimate reference population allele frequencies
 # Output = reference.popAF.npy (numpy binary matrix of size L (# loci) rows x K (ref pops) columns)
-WGSassign -b reference.beagle.gz --pop_af_IDs reference_IDS.txt --get_reference_af --o reference
+WGSassign --beagle reference.beagle.gz --pop_af_IDs reference_IDS.txt --get_reference_af --out reference
 
 # Estimate population assignment likelihoods
 # Output = assign.pop_like.txt (text file of size N (individuals) rows x K (ref pops) columns)
-WGSassign -b assign.beagle.gz --pop_af_file reference.popAF.npy --get_pop_like --o assign
+WGSassign --beagle assign.beagle.gz --pop_af_file reference.popAF.npy --get_pop_like --out assign
 ```
 
 ## Acknowledgements
