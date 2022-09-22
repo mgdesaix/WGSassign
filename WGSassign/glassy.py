@@ -38,8 +38,8 @@ def assignLL(L, A, t):
             glassy_cy.loglike(L, A, logl_vec, t, i, j)
             # loglike sum
             loglike = np.sum(logl_vec, dtype=float)
-            print("Individual " + str(i) + " done for pop " + str(j))
-            print("Log-likelihood: " + str(loglike))
+            # print("Individual " + str(i) + " done for pop " + str(j))
+            # print("Log-likelihood: " + str(loglike))
             # fill output matrix
             logl_mat[i,j] = loglike
     del logl_vec

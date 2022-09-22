@@ -28,17 +28,17 @@ parser.add_argument("-p", "--plink", metavar="FILE-PREFIX",
 	help="Prefix PLINK files (.bed, .bim, .fam)")
 parser.add_argument("-t", "--threads", metavar="INT", type=int, default=1,
 	help="Number of threads")
-parser.add_argument("-o", "--out", metavar="OUTPUT", default="pcangsd",
+parser.add_argument("-o", "--out", metavar="OUTPUT", default="wgsassign",
 	help="Prefix for output files")
 
-# parser.add_argument("--maf_iter", metavar="INT", type=int, default=200,
-# 	help="Maximum iterations for minor allele frequencies estimation - EM (200)")
-# parser.add_argument("--maf_tole", metavar="FLOAT", type=float, default=1e-4,
-# 	help="Tolerance for minor allele frequencies estimation update - EM (1e-4)")
-parser.add_argument("--iter", metavar="INT", type=int, default=100,
-	help="Maximum iterations for estimation of individual allele frequencies (100)")
-parser.add_argument("--tole", metavar="FLOAT", type=float, default=1e-5,
-	help="Tolerance for update in estimation of individual allele frequencies (1e-5)")
+parser.add_argument("--maf_iter", metavar="INT", type=int, default=200,
+	help="Maximum iterations for minor allele frequencies estimation - EM (200)")
+parser.add_argument("--maf_tole", metavar="FLOAT", type=float, default=1e-4,
+	help="Tolerance for minor allele frequencies estimation update - EM (1e-4)")
+# parser.add_argument("--iter", metavar="INT", type=int, default=100,
+# 	help="Maximum iterations for estimation of individual allele frequencies (100)")
+# parser.add_argument("--tole", metavar="FLOAT", type=float, default=1e-5,
+# 	help="Tolerance for update in estimation of individual allele frequencies (1e-5)")
 
 #############################################################3
 # Step 1) Reference population allele frequencies
@@ -173,7 +173,7 @@ def main():
 	  A = np.load(args.pop_af_file)
 	  print("Calculating likelihood of population assignment")
 	  logl_mat = glassy.assignLL(L, A, args.threads)
-	  np.savetxt(args.out + ".pop_like", logl_mat, fmt="%.7f")
+	  np.savetxt(args.out + ".pop_like.txt", logl_mat, fmt="%.7f")
 	  print("Saved population assignment log likelihoods as " + str(args.out) + \
 	       ".pop_like (text)")
 

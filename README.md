@@ -27,6 +27,20 @@ You can now run WGSassign with the `WGSassign` command.
 
 **Warning:** Installation on Mac OS X may require additional steps to enable OpenMP support. We recommend installation on HPC systems to take advantage of the parallelized code.
 
+## Usage
+### Running WGSassign
+WGSassign works directly on genotype likelihood files. Beagle genotype likelihood files can be generated from BAM files using [ANGSD](https://github.com/ANGSD/angsd). 
+
+```bash
+# Estimate reference population allele frequencies
+# Output = reference.popAF.npy (numpy binary matrix of size L (# loci) rows x K (ref pops) columns)
+WGSassign -b reference.beagle.gz --pop_af_IDs reference_IDS.txt --get_reference_af --o reference
+
+# Estimate population assignment likelihoods
+# Output = assign.pop_like.txt (text file of size N (individuals) rows x K (ref pops) columns)
+WGSassign -b assign.beagle.gz --pop_af_file reference.popAF.npy --get_pop_like --o assign
+```
+
 ## Acknowledgements
 
 This software makes extensive use of python/cython functions from [PCAngsd](https://github.com/Rosemeis/pcangsd). Most notably, we have incorporated their parallelized cython functions for efficiently reading large Beagle files and also expectation-maximization estimation of allele frequencies. More details regarding the uses of PCangsd can be found in the following publications:
