@@ -41,17 +41,21 @@ parser.add_argument("--maf_tole", metavar="FLOAT", type=float, default=1e-4,
 # 	help="Tolerance for update in estimation of individual allele frequencies (1e-5)")
 
 #############################################################3
-# Step 1) Reference population allele frequencies
+# Reference population allele frequencies
 parser.add_argument("--pop_af_IDs", metavar="FILE",
 	help="Filepath to IDs for reference population beagle")
 parser.add_argument("--get_reference_af", action="store_true", 
   help="Estimate allele frequencies for reference populations")
 
-# Step 2) Estimate likelihoods of assignment
+# Estimate likelihoods of assignment
 parser.add_argument("--pop_af_file", metavar="FILE",
 	help="Filepath to reference population allele frequencies")
 parser.add_argument("--get_pop_like", action="store_true", 
   help="Estimate log likelihood of individual assignment to each reference population")
+
+# Leave one out assignment accuracy
+parser.add_argument("--loo", action="store_true",
+	help="Perform leave-one-out cross validation")
 ###################################################################
 
 ##### WGSassign #####
@@ -96,11 +100,6 @@ def main():
 	# Import scripts
 	from WGSassign import reader_cy
 	from WGSassign import shared
-	# from pcangsd import covariance
-	# from pcangsd import selection
-	# from pcangsd import inbreed
-	# from pcangsd import admixture
-	# from pcangsd import tree
 	from WGSassign import glassy
 
 	# Parse data
@@ -131,7 +130,7 @@ def main():
 	m_old = L.shape[0] # For future reference
 	
 ####################################
-  # Step 1) Reference population allele frequencies
+  # Reference population allele frequencies
 	if args.get_reference_af:
 	  print("Parsing reference population ID file.")
 	  assert os.path.isfile(args.pop_af_IDs), "Reference population ID file does not exist!!"
@@ -153,18 +152,23 @@ def main():
 	    L1 = pop_index*2
 	    L2 = L1 + 1
 	    L_cat = np.concatenate((L1, L2))
-	    L_cat_index = np.sort(L_cat, axis = 0)
-	    L_cat_index.shape = (len(L_cat_index))
+	    L_cat_index = np.sort(L_cat, axis = 0).reshape(-1)
 	    L_pop = np.ascontiguousarray(L[:,L_cat_index])
 	    f_pop = shared.emMAF(L_pop, args.maf_iter, args.maf_tole, args.threads)
 	    f[:,i] = f_pop
 	    del L_pop, f_pop
 	  np.save(args.out + ".popAF", f)
-	  del f
 	  print("Saved reference population allele frequencies as " + str(args.out) + \
 	       ".popAF.npy (Binary - np.float32)\n")
+	  if args.loo:
+	    print("Performing leave-one-out cross validation.")
+	    logl_mat_loo = glassy.loo(L, f, IDs, args.threads, args.maf_iter, args.maf_tole)
+	    np.savetxt(args.out + ".pop_like_LOO.txt", logl_mat_loo, fmt="%.7f")
+	    print("Save leave-one-out cross validation log likelihoods as " + str(args.out) + \
+	         ".pop_like_LOO.txt")
+	  del f
 
-	# Step 2) Population assignment likelihood
+	# Population assignment likelihood
 	if args.get_pop_like:
 	  print("Parsing population allele frequency file.")
 	  assert os.path.isfile(args.pop_af_file), "Population allele frequency file does not exist!!"
@@ -175,7 +179,7 @@ def main():
 	  logl_mat = glassy.assignLL(L, A, args.threads)
 	  np.savetxt(args.out + ".pop_like.txt", logl_mat, fmt="%.7f")
 	  print("Saved population assignment log likelihoods as " + str(args.out) + \
-	       ".pop_like (text)")
+	       ".pop_like.txt (text)")
 
 ############################################################
 ##### Define main #####
