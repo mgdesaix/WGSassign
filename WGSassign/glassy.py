@@ -71,6 +71,7 @@ def loo(L, A, IDs, t, maf_iter, maf_tole):
         L_cat_index = np.sort(L_cat, axis = 0).reshape(-1)
         L_pop = np.ascontiguousarray(L[:,L_cat_index])
         f_pop = shared.emMAF(L_pop, maf_iter, maf_tole, t)
+        f_pop[f_pop == 0] = 1e-45
         # column index of the allele frequency file (based on unique order of pops)
         pop_col = np.argwhere(pops == i_pop)[0,0]
         # put new allele frequencies in column
