@@ -56,10 +56,10 @@ def loo(L, A, IDs, t, maf_iter, maf_tole):
     
     print(str(n) + " individuals to assign to " + str(k) + " populations")
     # unique reference pops
-    pops = np.unique(A[:,1])
+    pops = np.unique(IDs[:,1])
     for i in range(n):
         # for each individual, recalculate allele frequency
-        i_pop = A[i,1]
+        i_pop = IDs[i,1]
         # indices of all the individuals in the pop
         pop_index = np.argwhere(IDs[:,1] == i_pop)
         # remove current individual i
