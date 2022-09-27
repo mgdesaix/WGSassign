@@ -36,9 +36,14 @@ WGSassign works directly on genotype likelihood files. Beagle genotype likelihoo
 # Output = reference.popAF.npy (numpy binary matrix of size L (# loci) rows x K (ref pops) columns)
 WGSassign --beagle reference.beagle.gz --pop_af_IDs reference_IDS.txt --get_reference_af --out reference
 
+# Get likelihoods for leave-one-out assignment within known reference populations
+# Output = 1) reference.popAF.npy, 2) reference.pop_like_LOO.txt
+WGSassign --beagle reference.beagle.gz --pop_af_IDs reference_IDS.txt --get_reference_af --loo --out reference
+
 # Estimate population assignment likelihoods
 # Output = assign.pop_like.txt (text file of size N (individuals) rows x K (ref pops) columns)
 WGSassign --beagle assign.beagle.gz --pop_af_file reference.popAF.npy --get_pop_like --out assign
+
 ```
 
 ## Acknowledgements
