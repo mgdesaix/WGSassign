@@ -9,7 +9,7 @@ The WGSassign software relies on the following Python packages that you can inst
 - cython
 - scipy
 
-You can create an environment through conda easily as follows:
+You can create an environment through conda easily as follows using the `environment.yml` file provided:
 ```
 # Conda environment
 conda env create -f environment.yml
