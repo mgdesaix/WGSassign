@@ -144,6 +144,12 @@ def main():
 	  npops = len(pops)
 	  m = L.shape[0] # number of sites
 	  f = np.empty((m, npops), dtype=np.float32)
+	  # number of individuals
+	  n = L.shape[1] // 2
+	  # set minimum value for allele frequencies as 1 + the number of individuals sampled
+	  # min_val = 1 / (2 * (n + 1))
+	  min_val = 1e-10
+	  
 	  # For each reference population, estimate the allele frequencies from the beagle file
 	  for i in range(npops):
 	    # get indices of which rows in ID file correspond to the given reference pop
@@ -155,7 +161,7 @@ def main():
 	    L_cat_index = np.sort(L_cat, axis = 0).reshape(-1)
 	    L_pop = np.ascontiguousarray(L[:,L_cat_index])
 	    f_pop = shared.emMAF(L_pop, args.maf_iter, args.maf_tole, args.threads)
-	    f_pop[f_pop == 0] = 1e-45
+	    f_pop[f_pop < min_val] = min_val
 	    f[:,i] = f_pop
 	    del L_pop, f_pop
 	  np.save(args.out + ".popAF", f)
