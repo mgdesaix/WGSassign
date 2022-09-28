@@ -32,13 +32,13 @@ You can now run WGSassign with the `WGSassign` command.
 WGSassign works directly on genotype likelihood files. Beagle genotype likelihood files can be generated from BAM files using [ANGSD](https://github.com/ANGSD/angsd). 
 
 ```bash
-# Estimate reference population allele frequencies
+# Estimate reference population allele frequencies using 20 threads
 # Output = reference.popAF.npy (numpy binary matrix of size L (# loci) rows x K (ref pops) columns)
-WGSassign --beagle reference.beagle.gz --pop_af_IDs reference_IDS.txt --get_reference_af --out reference
+WGSassign --beagle reference.beagle.gz --pop_af_IDs reference_IDS.txt --get_reference_af --out reference --threads 20
 
-# Get likelihoods for leave-one-out assignment within known reference populations
+# Get likelihoods for leave-one-out assignment within known reference populations using 20 threads
 # Output = 1) reference.popAF.npy, 2) reference.pop_like_LOO.txt
-WGSassign --beagle reference.beagle.gz --pop_af_IDs reference_IDS.txt --get_reference_af --loo --out reference
+WGSassign --beagle reference.beagle.gz --pop_af_IDs reference_IDS.txt --get_reference_af --loo --out reference --threads 20
 
 # Estimate population assignment likelihoods
 # Output = assign.pop_like.txt (text file of size N (individuals) rows x K (ref pops) columns)
