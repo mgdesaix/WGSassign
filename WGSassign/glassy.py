@@ -54,8 +54,7 @@ def loo(L, A, IDs, t, maf_iter, maf_tole):
     # loglike matrix, of n x k (rows = individuals, columns = reference pops)
     logl_mat = np.zeros((n,k), dtype=np.float32)
     # set minimum value for allele frequencies as 1 + the number of individuals sampled
-    # min_val = 1 / (2 * (n + 1))
-    min_val = 1e-10
+    min_val = 1 / (2 * (n + 1))
     
     print(str(n) + " individuals to assign to " + str(k) + " populations")
     # unique reference pops

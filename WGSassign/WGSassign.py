@@ -147,8 +147,7 @@ def main():
 	  # number of individuals
 	  n = L.shape[1] // 2
 	  # set minimum value for allele frequencies as 1 + the number of individuals sampled
-	  # min_val = 1 / (2 * (n + 1))
-	  min_val = 1e-10
+	  min_val = 1 / (2 * (n + 1))
 	  
 	  # For each reference population, estimate the allele frequencies from the beagle file
 	  for i in range(npops):
