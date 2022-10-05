@@ -168,12 +168,14 @@ def main():
 	  np.save(args.out + ".popAF", f)
 	  print("Saved reference population allele frequencies as " + str(args.out) + \
 	       ".popAF.npy (Binary - np.float32)\n")
+	  print("Column order of populations is: " + str(pops))
 	  if args.loo:
 	    print("Performing leave-one-out cross validation.")
 	    logl_mat_loo = glassy.loo(L, f, IDs, args.threads, args.maf_iter, args.maf_tole)
 	    np.savetxt(args.out + ".pop_like_LOO.txt", logl_mat_loo, fmt="%.7f")
 	    print("Save leave-one-out cross validation log likelihoods as " + str(args.out) + \
 	         ".pop_like_LOO.txt")
+	    print("Column order of populations is: " + str(pops))
 	  del f
 
 	# Population assignment likelihood
