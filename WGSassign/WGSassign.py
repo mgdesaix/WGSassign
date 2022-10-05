@@ -160,7 +160,7 @@ def main():
 	    L_cat_index = np.sort(L_cat, axis = 0).reshape(-1)
 	    L_pop = np.ascontiguousarray(L[:,L_cat_index])
 	    f_pop = shared.emMAF(L_pop, args.maf_iter, args.maf_tole, args.threads)
-	    f_pop[f_pop < min_val] = min_val
+	    # f_pop[f_pop < min_val] = min_val
 	    f[:,i] = f_pop
 	    del L_pop, f_pop
 	  np.save(args.out + ".popAF", f)
