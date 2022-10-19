@@ -27,7 +27,7 @@ pip3 install -e .
 
 You can now run WGSassign with the `WGSassign` command.
 
-**Warning:** Installation on Mac OS X may require additional steps to enable OpenMP support. We recommend installation on HPC systems to take advantage of the parallelized code.
+**Note:** WGSassign has only been tested on Mac OS and Linux systems
 
 ## Usage
 ### Running WGSassign
