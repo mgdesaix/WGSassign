@@ -144,8 +144,10 @@ def main():
 	  npops = len(pops)
 	  m = L.shape[0] # number of sites
 	  f = np.empty((m, npops), dtype=np.float32)
-	  # number of individuals
+	  # number of individuals from beagle
 	  n = L.shape[1] // 2
+	  # Check number of individuals from beagle is same as reference file
+	  assert (n == IDs.shape[0]), "Number of individuals in beagle and reference file do not match!"
 	  # set minimum value for allele frequencies as 1 + the number of individuals sampled
 	  min_val = 1 / (2 * (n + 1))
 	  max_val = 1 - min_val
