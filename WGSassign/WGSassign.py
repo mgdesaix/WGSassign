@@ -99,7 +99,7 @@ def main():
 
 	# Import scripts
 	from WGSassign import reader_cy
-	from WGSassign import shared
+	from WGSassign import emMAF
 	from WGSassign import glassy
 
 	# Parse data
@@ -160,7 +160,7 @@ def main():
 	    L_cat = np.concatenate((L1, L2))
 	    L_cat_index = np.sort(L_cat, axis = 0).reshape(-1)
 	    L_pop = np.ascontiguousarray(L[:,L_cat_index])
-	    f_pop = shared.emMAF(L_pop, args.maf_iter, args.maf_tole, args.threads)
+	    f_pop = emMAF.emMAF(L_pop, args.maf_iter, args.maf_tole, args.threads)
 	    f_pop[f_pop < min_val] = min_val
 	    f_pop[f_pop > max_val] = max_val
 	    f[:,i] = f_pop

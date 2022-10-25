@@ -1,6 +1,5 @@
 """
-WGSassign
-Functions used in various analyses.
+EM MAF
 """
 
 __author__ = "Matt DeSaix"
@@ -9,7 +8,7 @@ __author__ = "Matt DeSaix"
 import numpy as np
 
 # Import scripts
-from WGSassign import shared_cy
+from WGSassign import emMAF_cy
 
 ##### Functions #####
 ### Estimate MAF ###
@@ -19,8 +18,8 @@ def emMAF(L, iter, tole, t):
     f.fill(0.25) # Uniform initialization
     f_prev = np.copy(f)
     for i in range(iter):
-        shared_cy.emMAF_update(L, f, t)
-        diff = shared_cy.rmse1d(f, f_prev)
+        emMAF_cy.emMAF_update(L, f, t)
+        diff = emMAF_cy.rmse1d(f, f_prev)
         if diff < tole:
             print("EM (MAF) converged at iteration: " + str(i+1))
             break

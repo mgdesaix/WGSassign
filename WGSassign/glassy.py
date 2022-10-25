@@ -9,7 +9,7 @@ import numpy as np
 
 # Import scripts
 from WGSassign import glassy_cy
-from WGSassign import shared
+from WGSassign import emMAF
 
 # log-likelihoods for assignment
 # L is the GLs from beagle file (M x (N*2))
@@ -73,7 +73,7 @@ def loo(L, A, IDs, t, maf_iter, maf_tole):
         L_cat = np.concatenate((L1, L2))
         L_cat_index = np.sort(L_cat, axis = 0).reshape(-1)
         L_pop = np.ascontiguousarray(L[:,L_cat_index])
-        f_pop = shared.emMAF(L_pop, maf_iter, maf_tole, t)
+        f_pop = emMAF.emMAF(L_pop, maf_iter, maf_tole, t)
         f_pop[f_pop < min_val] = min_val
         f_pop[f_pop > max_val] = max_val
         # column index of the allele frequency file (based on unique order of pops)
@@ -96,5 +96,3 @@ def loo(L, A, IDs, t, maf_iter, maf_tole):
     del logl_vec
     return logl_mat
 
-# EM algorithm for mixing proportions
-# def emProp():
