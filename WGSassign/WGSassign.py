@@ -122,6 +122,8 @@ def main():
 		L = reader_cy.readBeagle(args.beagle)
 		m = L.shape[0]
 		n = L.shape[1]//2
+		print("Loaded " + str(m) + " sites and " + str(n) + " individuals.")
+		m_old = L.shape[0] # For future reference
 	# else:
 	# 	print("Parsing PLINK files.")
 	# 	# assert args.filter is None, "Please perform sample filtering in PLINK!"
@@ -139,8 +141,8 @@ def main():
 	# 	G = G.reshape(m, G_len)
 	# 	L = np.zeros((m, 2*n), dtype=np.float32)
 	# 	reader_cy.convertBed(L, G, G_len, args.plink_error, m, n, args.threads)
-	print("Loaded " + str(m) + " sites and " + str(n) + " individuals.")
-	m_old = L.shape[0] # For future reference
+	# print("Loaded " + str(m) + " sites and " + str(n) + " individuals.")
+	# m_old = L.shape[0] # For future reference
 	
 ####################################
   # Reference population allele frequencies
