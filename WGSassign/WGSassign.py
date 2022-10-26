@@ -216,7 +216,7 @@ def main():
 	  logl_mat_index = np.loadtxt(args.pop_like_IDs, delimiter = "\t", dtype = "str")
 	  print("Calculating mixture proportions with EM")
 	  em_out = mixture.em_mix(logl_mat, logl_mat_index, args.mixture_iter)
-	  np.savetxt(args.out + ".em_mix.txt", em_out, fmt="%.7f")
+	  np.savetxt(args.out + ".em_mix.txt", em_out, fmt="%s")
 	  print("Saved EM mixture proportions " + str(args.out) + \
 	       ".em_mix.txt (text)")
 
