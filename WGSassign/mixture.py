@@ -35,5 +35,5 @@ def em_mix(L_mat, L_mat_index, iter):
     # save off the last EM iteration
     em_out[i,:] = pi_em_iters[-1,:]
     del pi_em_iters
-  em_mix_out = np.hstack((harvest_pops.reshape(n_harvest, 1), em_out))
+  em_mix_out = np.hstack((harvest_pops.reshape((n_harvest, 1)), em_out))
   
