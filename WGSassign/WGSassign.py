@@ -122,23 +122,23 @@ def main():
 		L = reader_cy.readBeagle(args.beagle)
 		m = L.shape[0]
 		n = L.shape[1]//2
-	else:
-		print("Parsing PLINK files.")
-		# assert args.filter is None, "Please perform sample filtering in PLINK!"
-		# assert args.filterSites is None, "Please perform site filtering in PLINK!"
-		assert os.path.isfile(args.plink + ".bed"), "Bed file doesn't exist!"
-		assert os.path.isfile(args.plink + ".bim"), "Bim file doesn't exist!"
-		assert os.path.isfile(args.plink + ".fam"), "Fam file doesn't exist!"
-
-		# Count number of sites and samples
-		m = extract_length(args.plink + ".bim")
-		n = extract_length(args.plink + ".fam")
-		with open(args.plink + ".bed", "rb") as bed:
-			G = np.fromfile(bed, dtype=np.uint8, offset=3)
-		G_len = ceil(n/4)
-		G = G.reshape(m, G_len)
-		L = np.zeros((m, 2*n), dtype=np.float32)
-		reader_cy.convertBed(L, G, G_len, args.plink_error, m, n, args.threads)
+	# else:
+	# 	print("Parsing PLINK files.")
+	# 	# assert args.filter is None, "Please perform sample filtering in PLINK!"
+	# 	# assert args.filterSites is None, "Please perform site filtering in PLINK!"
+	# 	assert os.path.isfile(args.plink + ".bed"), "Bed file doesn't exist!"
+	# 	assert os.path.isfile(args.plink + ".bim"), "Bim file doesn't exist!"
+	# 	assert os.path.isfile(args.plink + ".fam"), "Fam file doesn't exist!"
+	# 
+	# 	# Count number of sites and samples
+	# 	m = extract_length(args.plink + ".bim")
+	# 	n = extract_length(args.plink + ".fam")
+	# 	with open(args.plink + ".bed", "rb") as bed:
+	# 		G = np.fromfile(bed, dtype=np.uint8, offset=3)
+	# 	G_len = ceil(n/4)
+	# 	G = G.reshape(m, G_len)
+	# 	L = np.zeros((m, 2*n), dtype=np.float32)
+	# 	reader_cy.convertBed(L, G, G_len, args.plink_error, m, n, args.threads)
 	print("Loaded " + str(m) + " sites and " + str(n) + " individuals.")
 	m_old = L.shape[0] # For future reference
 	
