@@ -11,8 +11,8 @@ extensions = [Extension(
 				language="c++"
 			),
 			Extension(
-				"WGSassign.shared_cy",
-				["WGSassign/shared_cy.pyx"],
+				"WGSassign.emMAF_cy",
+				["WGSassign/emMAF_cy.pyx"],
 				extra_compile_args=['-Xpreprocessor', '-fopenmp', '-g0'],
 				extra_link_args=['-Xpreprocessor', '-fopenmp'],
 				include_dirs=[numpy.get_include()]
