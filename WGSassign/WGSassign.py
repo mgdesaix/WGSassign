@@ -82,8 +82,8 @@ def main():
 	print("Using " + str(args.threads) + " thread(s).\n")
 
 	# Check input
-	assert (args.beagle is not None) or (args.plink is not None), \
-			"Please provide input data (args.beagle or args.plink)!"
+	# assert (args.beagle is not None) or (args.plink is not None), \
+	# 		"Please provide input data (args.beagle or args.plink)!"
 
 	# Create log-file of arguments
 	full = vars(parser.parse_args())
