@@ -114,6 +114,7 @@ def main():
 	from WGSassign import reader_cy
 	from WGSassign import emMAF
 	from WGSassign import glassy
+	from WGSassign import mixture
 
 	# Parse data
 	if args.beagle is not None:
