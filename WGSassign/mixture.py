@@ -21,7 +21,7 @@ def em_mix(L_mat, L_mat_index, iter):
     L_mat_pop = np.ascontiguousarray(L_mat[pop_index,:])
     n_ind = L_mat_pop.shape[0]
     # create empty matrix for iterations
-    pi_em_iters = np.empty((n_iter, n_source))
+    pi_em_iters = np.empty((iter, n_source))
     # initialize equal mixture proportions
     pi_mat = np.diag(np.full(n_source,1))/n_source
     for j in range(iter):
