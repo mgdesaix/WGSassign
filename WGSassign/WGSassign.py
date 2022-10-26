@@ -56,6 +56,19 @@ parser.add_argument("--get_pop_like", action="store_true",
 # Leave one out assignment accuracy
 parser.add_argument("--loo", action="store_true",
 	help="Perform leave-one-out cross validation")
+
+# Mixture proportions
+parser.add_argument("--pop_like", metavar="FILE",
+	help="Filepath to population assignment log likelihood file")
+parser.add_argument("--pop_like_IDs", metavar="FILE",
+	help="Filepath to IDs for population assignment log likelihood file")
+parser.add_argument("--get_em_mix", action="store_true", 
+  help="Estimate mixture proportions with EM algorithm")
+parser.add_argument("--get_mcmc_mix", action="store_true", 
+  help="Estimate mixture proportions with MCMC algorithm")
+parser.add_argument("--mixture_iter", metavar="INT", type=int, default=200,
+	help="Maximum iterations mixture estimation - EM (200)")
+
 ###################################################################
 
 ##### WGSassign #####
@@ -184,14 +197,25 @@ def main():
 	if args.get_pop_like:
 	  print("Parsing population allele frequency file.")
 	  assert os.path.isfile(args.pop_af_file), "Population allele frequency file does not exist!!"
-	  # Need to figure out cython reader for this
-	  # A = reader_cy.readPopAF(args.pop_af_file)
 	  A = np.load(args.pop_af_file)
 	  print("Calculating likelihood of population assignment")
 	  logl_mat = glassy.assignLL(L, A, args.threads)
 	  np.savetxt(args.out + ".pop_like.txt", logl_mat, fmt="%.7f")
 	  print("Saved population assignment log likelihoods as " + str(args.out) + \
 	       ".pop_like.txt (text)")
+	       
+	# Mixture proportions
+	if args.get_em_mix:
+	  print("Parsing population assignment likelihood file.")
+	  assert os.path.isfile(args.pop_like), "Population assignment log likelihood file does not exist!!"
+	  assert os.path.isfile(args.pop_like_IDs), "ID file does not exist!!"
+	  logl_mat = np.loadtxt(args.pop_like)
+	  logl_mat_index = np.loadtxt(args.pop_like_IDs, delimiter = "\t", dtype = "str")
+	  print("Calculating mixture proportions with EM")
+	  em_out = mixture.em_mix(logl_mat, logl_mat_index, args.mixture_iter)
+	  np.savetxt(args.out + ".em_mix.txt", em_out, fmt="%.7f")
+	  print("Saved EM mixture proportions " + str(args.out) + \
+	       ".em_mix.txt (text)")
 
 ############################################################
 ##### Define main #####
