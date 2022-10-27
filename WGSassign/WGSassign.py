@@ -220,6 +220,17 @@ def main():
 	  print("Saved EM mixture proportions " + str(args.out) + \
 	       ".em_mix.txt (text)")
 
+	if args.get_mcmc_mix:
+	  print("Parsing population assignment likelihood file.")
+	  assert os.path.isfile(args.pop_like), "Population assignment log likelihood file does not exist!!"
+	  assert os.path.isfile(args.pop_like_IDs), "ID file does not exist!!"
+	  logl_mat = np.loadtxt(args.pop_like)
+	  logl_mat_index = np.loadtxt(args.pop_like_IDs, delimiter = "\t", dtype = "str")
+	  print("Calculating mixture proportions with EM")
+	  mcmc_out = mixture.mcmc_mix(logl_mat, logl_mat_index, args.mixture_iter)
+	  np.savetxt(args.out + ".em_mix.txt", mcmc_out, fmt="%s")
+	  print("Saved MCMC mixture proportions " + str(args.out) + \
+	       ".mcmc_mix.txt (text)")
 ############################################################
 ##### Define main #####
 if __name__ == "__main__":
