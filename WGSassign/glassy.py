@@ -13,15 +13,15 @@ from WGSassign import emMAF
 
 # log-likelihoods for assignment
 # L is the GLs from beagle file (M x (N*2))
-# A is the allele frequencies of the reference pops (M x K)
-def assignLL(L, A, t):
+# af is the allele frequencies of the reference pops (M x K)
+def assignLL(L, af, t):
     ## Initiate variables and containers
     # number of loci
     m = L.shape[0]
     # number of individuals
     n = L.shape[1] // 2
     # number of populations
-    k = A.shape[1]
+    k = af.shape[1]
     # loglike matrix, of n x k (rows = individuals, columns = reference pops)
     logl_mat = np.zeros((n,k), dtype=np.float32)
     
@@ -32,7 +32,7 @@ def assignLL(L, A, t):
             # set log like vector for individual i to pop j
             logl_vec = np.zeros(m, dtype=np.float32)
             # fill vector
-            glassy_cy.loglike(L, A, logl_vec, t, i, j)
+            glassy_cy.loglike(L, af, logl_vec, t, i, j)
             # loglike sum
             loglike = np.sum(logl_vec, dtype=float)
             # print("Individual " + str(i) + " done for pop " + str(j))
@@ -43,14 +43,14 @@ def assignLL(L, A, t):
     return logl_mat
 
 # Leave-one-out likelihoods
-def loo(L, A, IDs, t, maf_iter, maf_tole):
+def loo(L, af, IDs, t, maf_iter, maf_tole):
     ## Initiate variables and containers
     # number of loci
     m = L.shape[0]
     # number of individuals
     n = L.shape[1] // 2
     # number of populations
-    k = A.shape[1]
+    k = af.shape[1]
     # loglike matrix, of n x k (rows = individuals, columns = reference pops)
     logl_mat = np.zeros((n,k), dtype=np.float32)
     # set minimum value for allele frequencies as 1 + the number of individuals sampled
@@ -73,20 +73,20 @@ def loo(L, A, IDs, t, maf_iter, maf_tole):
         L_cat = np.concatenate((L1, L2))
         L_cat_index = np.sort(L_cat, axis = 0).reshape(-1)
         L_pop = np.ascontiguousarray(L[:,L_cat_index])
-        f_pop = emMAF.emMAF(L_pop, maf_iter, maf_tole, t)
-        f_pop[f_pop < min_val] = min_val
-        f_pop[f_pop > max_val] = max_val
+        af_pop = emMAF.emMAF(L_pop, maf_iter, maf_tole, t)
+        af_pop[af_pop < min_val] = min_val
+        af_pop[af_pop > max_val] = max_val
         # column index of the allele frequency file (based on unique order of pops)
         pop_col = np.argwhere(pops == i_pop)[0,0]
         # put new allele frequencies in column
-        A[:,pop_col] = f_pop
-        del L_pop, f_pop
+        af[:,pop_col] = af_pop
+        del L_pop, af_pop
         
         for j in range(k):
             # set log like vector for individual i to pop j
             logl_vec = np.zeros(m, dtype=np.float32)
             # fill vector
-            glassy_cy.loglike(L, A, logl_vec, t, i, j)
+            glassy_cy.loglike(L, af, logl_vec, t, i, j)
             # loglike sum
             loglike = np.sum(logl_vec, dtype=float)
             # print("Individual " + str(i) + " done for pop " + str(j))
