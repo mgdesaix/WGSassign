@@ -18,6 +18,13 @@ extensions = [Extension(
 				include_dirs=[numpy.get_include()]
 			),
 			Extension(
+				"WGSassign.fisher_cy",
+				["WGSassign/fisher_cy.pyx"],
+				extra_compile_args=['-Xpreprocessor', '-fopenmp', '-g0'],
+				extra_link_args=['-Xpreprocessor', '-fopenmp'],
+				include_dirs=[numpy.get_include()]
+			),
+			Extension(
 				"WGSassign.glassy_cy",
 				["WGSassign/glassy_cy.pyx"],
 				extra_compile_args=['-Xpreprocessor', '-fopenmp', '-g0'],
