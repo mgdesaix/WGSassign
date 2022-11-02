@@ -46,6 +46,8 @@ parser.add_argument("--pop_af_IDs", metavar="FILE",
 	help="Filepath to IDs for reference population beagle")
 parser.add_argument("--get_reference_af", action="store_true", 
   help="Estimate allele frequencies for reference populations")
+parser.add_argument("--get_reference_fisher", action="store_true", 
+  help="Estimate Fisher information for reference populations")
 
 # Estimate likelihoods of assignment
 parser.add_argument("--pop_af_file", metavar="FILE",
@@ -115,6 +117,7 @@ def main():
 	from WGSassign import emMAF
 	from WGSassign import glassy
 	from WGSassign import mixture
+	from WGSassign import fisher
 
 	# Parse data
 	if args.beagle is not None:
@@ -124,7 +127,7 @@ def main():
 		m = L.shape[0]
 		n = L.shape[1]//2
 		print("Loaded " + str(m) + " sites and " + str(n) + " individuals.")
-		m_old = L.shape[0] # For future reference
+	# 	m_old = L.shape[0] # For future reference
 	# else:
 	# 	print("Parsing PLINK files.")
 	# 	# assert args.filter is None, "Please perform sample filtering in PLINK!"
@@ -159,7 +162,8 @@ def main():
 	  # number of reference pops
 	  npops = len(pops)
 	  m = L.shape[0] # number of sites
-	  f = np.empty((m, npops), dtype=np.float32)
+	  # allele frequency matrix
+	  af = np.empty((m, npops), dtype=np.float32)
 	  # number of individuals from beagle
 	  n = L.shape[1] // 2
 	  # Check number of individuals from beagle is same as reference file
@@ -178,23 +182,30 @@ def main():
 	    L_cat = np.concatenate((L1, L2))
 	    L_cat_index = np.sort(L_cat, axis = 0).reshape(-1)
 	    L_pop = np.ascontiguousarray(L[:,L_cat_index])
-	    f_pop = emMAF.emMAF(L_pop, args.maf_iter, args.maf_tole, args.threads)
-	    f_pop[f_pop < min_val] = min_val
-	    f_pop[f_pop > max_val] = max_val
-	    f[:,i] = f_pop
-	    del L_pop, f_pop
-	  np.save(args.out + ".popAF", f)
+	    af_pop = emMAF.emMAF(L_pop, args.maf_iter, args.maf_tole, args.threads)
+	    af_pop[af_pop < min_val] = min_val
+	    af_pop[af_pop > max_val] = max_val
+	    af[:,i] = af_pop
+	    del L_pop, af_pop
+	  np.save(args.out + ".popAF", af)
 	  print("Saved reference population allele frequencies as " + str(args.out) + \
 	       ".popAF.npy (Binary - np.float32)\n")
 	  print("Column order of populations is: " + str(pops))
 	  if args.loo:
 	    print("Performing leave-one-out cross validation.")
-	    logl_mat_loo = glassy.loo(L, f, IDs, args.threads, args.maf_iter, args.maf_tole)
+	    logl_mat_loo = glassy.loo(L, af, IDs, args.threads, args.maf_iter, args.maf_tole)
 	    np.savetxt(args.out + ".pop_like_LOO.txt", logl_mat_loo, fmt="%.7f")
 	    print("Save leave-one-out cross validation log likelihoods as " + str(args.out) + \
 	         ".pop_like_LOO.txt")
 	    print("Column order of populations is: " + str(pops))
-	  del f
+	  if args.get_reference_fisher:
+	    print("Estimating Fisher information.")
+	    f_obs = fisher.fisher_obs(L, af, IDs)
+	    np.save(args.out + ".f_obs", f_obs)
+	    print("Saved reference population observed Fisher information as " + str(args.out) + \
+	      ".fisher_obs.npy (Binary - np.float32)\n")
+	    print("Column order of populations is: " + str(pops))
+	  del af
 
 	# Population assignment likelihood
 	if args.get_pop_like:
