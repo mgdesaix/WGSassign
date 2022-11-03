@@ -113,11 +113,11 @@ def main():
 	from math import ceil
 
 	# Import scripts
-	from WGSassign import reader_cy
 	from WGSassign import emMAF
 	from WGSassign import glassy
 	from WGSassign import mixture
 	from WGSassign import fisher
+	from WGSassign import reader_cy
 
 	# Parse data
 	if args.beagle is not None:
