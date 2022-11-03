@@ -27,5 +27,5 @@ cpdef loglike(float[:,::1] L, float[:,::1] A, int i, int n, float[::1] f_pop):
                     n1 = 2.0*(g0 + g2 - (2.0*g1))
                     n2 = ((1.0 - th)*n1) + (2.0*(g1 - g0))
                     term = -1.0 * ((n1/u) - ((n2/u) * (n2/u)))
-                    term_sum += term 
+                    term_sum = term_sum + term 
                 f_pop[s] = f_pop[s] + term_sum
