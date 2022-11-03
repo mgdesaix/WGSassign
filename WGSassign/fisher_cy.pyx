@@ -14,7 +14,7 @@ cpdef loglike(float[:,::1] L, float[:,::1] A, int i, int n, float[::1] f_pop):
     cdef int m = L.shape[0]
     cdef int s, t
     cdef float u, n1, n2, term
-    def float term_sum, th, g0, g1, g2
+    cdef float term_sum, th, g0, g1, g2
     with nogil:
             for s in prange(m, num_threads=t):
                 term_sum = 0
