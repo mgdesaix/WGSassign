@@ -14,14 +14,15 @@ cpdef loglike(float[:,::1] L, float[:,::1] A, int i, int n, float[::1] f_pop):
     cdef int m = L.shape[0]
     cdef int s, t
     cdef float u, n1, n2, term
+    def float term_sum, th, g0, g1, g2
     with nogil:
             for s in prange(m, num_threads=t):
-                cdef float term_sum = 0
-                cdef float th = A[s,i]
+                term_sum = 0
+                th = A[s,i]
                 for t in range(n):
-                    cdef float g0 = L[s,2*t+0]
-                    cdef float g1 = L[s,2*t+1]
-                    cdef float g2 = 1.0 - g0 - g1
+                    g0 = L[s,2*t+0]
+                    g1 = L[s,2*t+1]
+                    g2 = 1.0 - g0 - g1
                     u = (g0*th*th) + (g1*2.0*th*(1.0 - th)) + (g2*(1.0 - th)*(1.0 - th))
                     n1 = 2.0*(g0 + g2 - (2.0*g1))
                     n2 = ((1.0 - th)*n1) + (2.0*(g1 - g0))
