@@ -21,6 +21,8 @@ mamba env create -f environment.yml
 ```bash
 git clone https://github.com/mgdesaix/WGSassign.git
 cd WGSassign
+mamba env create -f environment.yml
+conda activate WGSassign
 python setup.py build_ext --inplace
 pip3 install -e .
 ```
