@@ -24,7 +24,7 @@ cpdef np.ndarray[DTYPE_t, ndim=2] readBeagle(str beagle):
     cdef char* delims = "\t \n"
     cdef vector[vector[float]] L
     cdef vector[float] L_ind
-    with os.popen("zcat " + beagle) as f:
+    with os.popen("gunzip -c " + beagle) as f:
         # Count number of individuals from first line
         line_bytes = str.encode(f.readline())
         line = line_bytes
