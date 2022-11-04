@@ -7,14 +7,14 @@ WGSassign was developed to conduct standard population assignment methods using 
 ### Dependencies
 The WGSassign software relies on the following Python packages that you can install through [mamba](https://github.com/mamba-org/mamba)/[conda](https://docs.conda.io/projects/conda/en/latest/index.html) (recommended) or pip:
 
-- numpy
+- numpy (<=1.22.3, current WGSassign functionality fails with >=1.22.4)
 - cython
 - scipy
 
-You can create an environment through conda easily as follows using the `environment.yml` file provided:
+You can create an environment through mamba easily as follows using the `environment.yml` file provided:
 ```
 # Conda environment
-conda env create -f environment.yml
+mamba env create -f environment.yml
 ```
 
 ## Install and build
@@ -27,7 +27,7 @@ pip3 install -e .
 
 You can now run WGSassign with the `WGSassign` command.
 
-**Note:** WGSassign has only been tested on Mac OS and Linux systems
+**Note:** WGSassign has only been tested on Linux systems
 
 ## Usage
 ### Running WGSassign
