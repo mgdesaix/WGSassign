@@ -80,7 +80,7 @@ breeding_IDs=amre.breeding.ind85.reference_k5.IDs.txt
 outname=amre.breeding.ind85.ds_2x.sites-filter.top_50_each
 # Estimate reference population allele frequencies using 20 threads
 # Output = ${outname}.popAF.npy (numpy binary matrix of size L (# loci) rows x K (ref pops) columns)
-WGSassign --beagle ${data_dir}/${breeding_beagle} --pop_af_IDs ${data_dir}/${breeding_IDs} --get_reference_af --loo --out ./out/breeding/${outname} --threads 20
+WGSassign --beagle ${data_dir}/${breeding_beagle} --pop_af_IDs ${data_dir}/${breeding_IDs} --get_reference_af --out ./out/breeding/${outname} --threads 20
 ```
 
 **Note:** numpy binaries are produced without population headers so double check the WGSassign output which states the population order of the columns!

@@ -9,7 +9,7 @@ from libc.math cimport log
 # L is the reader_cy read beagle file, matrix M x (2 * N)
 # A is allele frequency matrix of pop k
 # f_pop is the output vector of fisher information across all loci for a population
-cpdef loglike(float[:,::1] L, float[:,::1] A, int i, int n, float[::1] f_pop):
+cpdef fisher_obs(float[:,::1] L, float[:,::1] A, int i, int n, float[::1] f_pop):
     cdef int m = L.shape[0]
     cdef int s, t
     cdef float u, n1, n2, term

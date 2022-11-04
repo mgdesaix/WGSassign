@@ -9,6 +9,8 @@ import numpy as np
 from WGSassign import fisher_cy
 
 def fisher_obs(L, af, IDs):
+  # Number of loci
+  m = L.shape[0]
   # Unique reference pop names
   pops = np.unique(IDs[:,1])
   # number of reference pops
