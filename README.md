@@ -74,7 +74,7 @@ The following code examples can be run using the data provided with WGSassign in
 Specifying `--get_reference_af` produces the reference population allele file. It is a numpy binary with L (# loci) rows x K (reference population) columns:
 
 ```bash
-data_dir=/home/mgdesaix/projects/WGSassign-practice/data
+data_dir=./data
 breeding_beagle=amre.breeding.ind85.ds_2x.sites-filter.top_50_each.beagle.gz
 breeding_IDs=amre.breeding.ind85.reference_k5.IDs.txt
 outname=amre.breeding.ind85.ds_2x.sites-filter.top_50_each
@@ -117,6 +117,14 @@ The mixture proportions of the population of assigned individuals can also be es
 # Estimate mixture with EM algorithm
 # Output = 1) ${outname2}.em_mix.txt (text file with column 1 as the mixed populations, and the remaining columns giving the mixture proportions of the source populations)
 WGSassign --pop_like ./out/nonbreeding/${outname2}.pop_like.txt --pop_like_IDs ${data_dir}/${nonbreeding_IDs} --get_em_mix --out ./out/nonbreeding/${outname2}
+```
+
+### Fisher information
+
+The observed Fisher information across loci in the reference populations is produced by adding `--get_reference_fisher` when obtaining the reference population allele frequencies. The output is a numpy binary of `.f_obs.npy` with L (# loci) rows and K (# reference population) columns.
+
+```sh
+WGSassign --beagle ${data_dir}/${breeding_beagle} --pop_af_IDs ${data_dir}/${breeding_IDs} --get_reference_af --get_reference_fisher --out ./out/breeding/${outname} --threads 20
 ```
 
 ## Acknowledgements
