@@ -4,7 +4,6 @@ cimport numpy as np
 from cython.parallel import prange
 from cython import boundscheck, wraparound
 from libc.math cimport log
-from libcpp.vector import vector
 
 # Calculate fisher information
 # L is the reader_cy read beagle file, matrix M x (2 * N)
