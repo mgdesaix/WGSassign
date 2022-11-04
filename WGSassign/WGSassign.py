@@ -30,7 +30,6 @@ parser.add_argument("-t", "--threads", metavar="INT", type=int, default=1,
 	help="Number of threads")
 parser.add_argument("-o", "--out", metavar="OUTPUT", default="wgsassign",
 	help="Prefix for output files")
-
 parser.add_argument("--maf_iter", metavar="INT", type=int, default=200,
 	help="Maximum iterations for minor allele frequencies estimation - EM (200)")
 parser.add_argument("--maf_tole", metavar="FLOAT", type=float, default=1e-4,
