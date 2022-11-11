@@ -167,9 +167,6 @@ def main():
 	  n = L.shape[1] // 2
 	  # Check number of individuals from beagle is same as reference file
 	  assert (n == IDs.shape[0]), "Number of individuals in beagle and reference file do not match!"
-	  # set minimum value for allele frequencies as 1 + the number of individuals sampled
-	  min_val = 1 / (2 * (n + 1))
-	  max_val = 1 - min_val
 	  
 	  # For each reference population, estimate the allele frequencies from the beagle file
 	  for i in range(npops):
@@ -182,6 +179,10 @@ def main():
 	    L_cat_index = np.sort(L_cat, axis = 0).reshape(-1)
 	    L_pop = np.ascontiguousarray(L[:,L_cat_index])
 	    af_pop = emMAF.emMAF(L_pop, args.maf_iter, args.maf_tole, args.threads)
+	    # set minimum value for allele frequencies as 1 + the number of individuals sampled
+	    n_pop = L_pop.shape[1] // 2
+	    min_val = 1 / (2 * (n_pop + 1))
+	    max_val = 1 - min_val
 	    af_pop[af_pop < min_val] = min_val
 	    af_pop[af_pop > max_val] = max_val
 	    af[:,i] = af_pop
