@@ -32,7 +32,7 @@ def fisher_obs(L, af, IDs, t):
     # af_pop = af[:,i]
     f_pop = np.zeros(m, dtype=np.float32)
     # calculate fisher information for given reference pop i with n individuals
-    n = L.shape[1]//2
+    n = L_pop.shape[1]//2
     fisher_cy.fisher_obs(L_pop, af, t, i, n, f_pop)
     f_obs[:,i] = f_pop
     # calculate effective sample size from fisher information

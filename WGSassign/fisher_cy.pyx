@@ -32,10 +32,8 @@ cpdef fisher_obs(float[:,::1] L, float[:,::1] A, int t, int i, int n, float[::1]
 cpdef ne_obs(float[::1] f_pop, float[:,::1] A, int t, int i, int n, float[::1] ne_pop):
     cdef int m = A.shape[0]
     cdef int s
-    cdef float th, i_obs, n_tilde
+    cdef float n_tilde
     with nogil:
             for s in prange(m, num_threads=t):
-                th = A[s,i]
-                i_obs = f_pop[s]
-                n_tilde = 0.5 * i_obs * th * (1 - th)
+                n_tilde = 0.5 * f_pop[s] * A[s,i] * (1 - A[s,i])
                 ne_pop[s] = ne_pop[s] + n_tilde
