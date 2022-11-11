@@ -25,7 +25,7 @@ cpdef fisher_obs(float[:,::1] L, float[:,::1] A, int t, int i, int n, float[::1]
                     u = (g2*(1.0-th)*(1.0-th)) + (g1*2.0*th*(1.0 - th)) + (g0*th*th)
                     n1 = 2.0*(g2 + g0 - (2.0*g1))
                     n2 = (th*n1) + (2.0*(g1 - g2))
-                    term = -1.0 * ((n1/u) - ((n0/u) * (n0/u)))
+                    term = -1.0 * ((n1/u) - ((n2/u) * (n2/u)))
                     term_sum = term_sum + term 
                 f_pop[s] = f_pop[s] + term_sum
 
