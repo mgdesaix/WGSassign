@@ -8,7 +8,7 @@ __author__ = "Matt DeSaix"
 import numpy as np
 from WGSassign import fisher_cy
 
-def fisher_obs(L, af, IDs):
+def fisher_obs(L, af, IDs, t):
   # Number of loci
   m = L.shape[0]
   # Unique reference pop names
@@ -17,6 +17,8 @@ def fisher_obs(L, af, IDs):
   npops = len(pops)
   # create observed Fisher matrix
   f_obs = np.empty((m, npops), dtype=np.float32)
+  # create effective sample size matrix
+  ne_obs = np.empty((m, npops), dtype = np.float32)
   for i in range(npops):
     # get indices of which rows in ID file correspond to the given reference pop
     pop_index = np.argwhere(IDs[:,1] == pops[i])
@@ -31,9 +33,13 @@ def fisher_obs(L, af, IDs):
     f_pop = np.zeros(m, dtype=np.float32)
     # calculate fisher information for given reference pop i with n individuals
     n = L.shape[1]//2
-    fisher_cy.fisher_obs(L_pop, af, i, n, f_pop)
+    fisher_cy.fisher_obs(L_pop, af, t, i, n, f_pop)
     f_obs[:,i] = f_pop
-    del L_pop, f_pop
-  return f_obs
+    # calculate effective sample size from fisher information
+    ne_pop = np.zeros(m, dtype=np.float32)
+    fisher_cy.ne_obs(f_pop, af, t, i, n, ne_pop)
+    ne_obs[:,i] = ne_pop
+    del L_pop, f_pop, ne_pop
+  return f_obs, ne_obs
 
   

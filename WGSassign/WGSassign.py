@@ -199,10 +199,13 @@ def main():
 	    print("Column order of populations is: " + str(pops))
 	  if args.get_reference_fisher:
 	    print("Estimating Fisher information.")
-	    f_obs = fisher.fisher_obs(L, af, IDs)
-	    np.save(args.out + ".f_obs", f_obs)
+	    f_obs, ne_obs = fisher.fisher_obs(L, af, IDs, args.threads)
+	    np.save(args.out + ".fisher_obs", f_obs)
 	    print("Saved reference population observed Fisher information as " + str(args.out) + \
 	      ".fisher_obs.npy (Binary - np.float32)\n")
+	    np.save(args.out + ".ne_obs", ne_obs)
+	    print("Saved reference population effective sample size estimates as " + str(args.out) + \
+	      ".ne_obs.npy (Binary - np.float32)\n")
 	    print("Column order of populations is: " + str(pops))
 	  del af
 
