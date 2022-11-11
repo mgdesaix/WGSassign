@@ -53,9 +53,6 @@ def loo(L, af, IDs, t, maf_iter, maf_tole):
     k = af.shape[1]
     # loglike matrix, of n x k (rows = individuals, columns = reference pops)
     logl_mat = np.zeros((n,k), dtype=np.float32)
-    # set minimum value for allele frequencies as 1 + the number of individuals sampled
-    min_val = 1 / (2 * (n + 1))
-    max_val = 1 - min_val
     
     print(str(n) + " individuals to assign to " + str(k) + " populations")
     # unique reference pops
@@ -74,6 +71,11 @@ def loo(L, af, IDs, t, maf_iter, maf_tole):
         L_cat_index = np.sort(L_cat, axis = 0).reshape(-1)
         L_pop = np.ascontiguousarray(L[:,L_cat_index])
         af_pop = emMAF.emMAF(L_pop, maf_iter, maf_tole, t)
+        # set minimum value for allele frequencies as 1 + the number of individuals sampled
+        n_pop = L_pop.shape[1] // 2
+        min_val = 1 / (2 * (n_pop + 1))
+        max_val = 1 - min_val
+        
         af_pop[af_pop < min_val] = min_val
         af_pop[af_pop > max_val] = max_val
         # column index of the allele frequency file (based on unique order of pops)
