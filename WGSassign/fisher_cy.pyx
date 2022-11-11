@@ -10,7 +10,7 @@ from libc.math cimport log
 # A is allele frequency matrix of pop k
 # f_pop is the output vector of fisher information across all loci for a population
 cpdef fisher_obs(float[:,::1] L, float[:,::1] A, int t, int i, int n, float[::1] f_pop):
-    cdef int m = L.shape[0]
+    cdef int m = A.shape[0]
     cdef int s, r
     cdef float u, n1, n2, term
     cdef float term_sum, th, g0, g1, g2
@@ -30,7 +30,7 @@ cpdef fisher_obs(float[:,::1] L, float[:,::1] A, int t, int i, int n, float[::1]
                 f_pop[s] = f_pop[s] + term_sum
 
 cpdef ne_obs(float[::1] f_pop, float[:,::1] A, int t, int i, int n, float[::1] ne_pop):
-    cdef int m = L.shape[0]
+    cdef int m = A.shape[0]
     cdef int s
     cdef float th, i_obs, n_tilde
     with nogil:
