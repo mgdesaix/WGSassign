@@ -54,7 +54,7 @@ options:
   --maf_iter INT        Maximum iterations for minor allele frequencies estimation - EM (200)
   --maf_tole FLOAT      Tolerance for minor allele frequencies estimation update - EM (1e-4)
   --pop_af_IDs FILE     Filepath to IDs for reference population beagle
-  --get_reference_af    Estimate allele frequencies for reference populations
+  --get_reference_af    Estimate allele frequencies, Fisher information and effective sample size for reference populations
   --pop_af_file FILE    Filepath to reference population allele frequencies
   --get_pop_like        Estimate log likelihood of individual assignment to each reference population
   --loo                 Perform leave-one-out cross validation
@@ -69,9 +69,9 @@ options:
 
 To create a file of allele frequencies across all reference populations is straightforward: provide 1) a beagle file and 2) a reference ID file. The reference ID file needs to be tab delimited and have 2 columns, with each row being an individual and the 2nd column specifying the reference population the individual belongs to. It is **essential** that the sample order in the ID file (row-wise) reflects the sample order in the Beagle file (column-wise); though header sample names in the beagle file don't have to match the first column of the ID file. I do this by just creating a reference file from whatever BAM list I used to create the beagle file.
 
-The following code examples can be run using the data provided with WGSassign in the `data/` directory.
+Specifying `--get_reference_af` produces the reference population allele file. It is a numpy binary with L (# loci) rows x K (reference population) columns. Also calculated is the observed Fisher information across loci and the output is a numpy binary of `.fisher_obs.npy` of the same *L* x *K* dimensions. The effective sample size of the reference populations for each locus are also calculated and the output is a numpy binary `.ne_obs.npy` of the same dimensions.
 
-Specifying `--get_reference_af` produces the reference population allele file. It is a numpy binary with L (# loci) rows x K (reference population) columns:
+The following code examples can be run using the data provided with WGSassign in the `data/` directory.
 
 ```bash
 data_dir=./data
@@ -79,7 +79,7 @@ breeding_beagle=amre.breeding.ind85.ds_2x.sites-filter.top_50_each.beagle.gz
 breeding_IDs=amre.breeding.ind85.reference_k5.IDs.txt
 outname=amre.breeding.ind85.ds_2x.sites-filter.top_50_each
 # Estimate reference population allele frequencies using 20 threads
-# Output = ${outname}.popAF.npy (numpy binary matrix of size L (# loci) rows x K (ref pops) columns)
+# Output = ${outname}.pop_af.npy (numpy binary matrix of size L (# loci) rows x K (ref pops) columns)
 WGSassign --beagle ${data_dir}/${breeding_beagle} --pop_af_IDs ${data_dir}/${breeding_IDs} --get_reference_af --out ./out/breeding/${outname} --threads 20
 ```
 
@@ -92,7 +92,7 @@ Cross-validation is an important technique for determining assignment accuracy, 
 
 ```bash
 # Get likelihoods for leave-one-out assignment within known reference populations using 20 threads
-# Output = 1) ${outname}.popAF.npy, 2) ${outname}.pop_like_LOO.txt
+# Output = 1) ${outname}.pop_af.npy, 2) ${outname}.pop_like_LOO.txt
 WGSassign --beagle ${data_dir}/${breeding_beagle} --pop_af_IDs ${data_dir}/${breeding_IDs} --get_reference_af --loo --out ./out/breeding/${outname} --threads 20
 ```
 
@@ -106,7 +106,7 @@ nonbreeding_IDs=amre.nonbreeding.ind34.site.IDs.txt
 outname2=amre.nonbreeding.ind34.ds_2x.sites-filter.top_50_each
 # Estimate population assignment likelihoods
 # Output = ${outname2}.pop_like.txt (text file of size N (individuals) rows x K (ref pops) columns)
-WGSassign --beagle ${data_dir}/${nonbreeding_beagle} --pop_af_file ./out/breeding/${outname}.popAF.npy --get_pop_like --out ./out/nonbreeding/${outname2} --threads 20
+WGSassign --beagle ${data_dir}/${nonbreeding_beagle} --pop_af_file ./out/breeding/${outname}.pop_af.npy --get_pop_like --out ./out/nonbreeding/${outname2} --threads 20
 ```
 
 ### Mixture proportions
@@ -117,14 +117,6 @@ The mixture proportions of the population of assigned individuals can also be es
 # Estimate mixture with EM algorithm
 # Output = 1) ${outname2}.em_mix.txt (text file with column 1 as the mixed populations, and the remaining columns giving the mixture proportions of the source populations)
 WGSassign --pop_like ./out/nonbreeding/${outname2}.pop_like.txt --pop_like_IDs ${data_dir}/${nonbreeding_IDs} --get_em_mix --out ./out/nonbreeding/${outname2}
-```
-
-### Fisher information
-
-The observed Fisher information across loci in the reference populations is produced by adding `--get_reference_fisher` when obtaining the reference population allele frequencies. The output is a numpy binary of `.f_obs.npy` with L (# loci) rows and K (# reference population) columns.
-
-```sh
-WGSassign --beagle ${data_dir}/${breeding_beagle} --pop_af_IDs ${data_dir}/${breeding_IDs} --get_reference_af --get_reference_fisher --out ./out/breeding/${outname} --threads 20
 ```
 
 ## Acknowledgements

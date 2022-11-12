@@ -45,8 +45,6 @@ parser.add_argument("--pop_af_IDs", metavar="FILE",
 	help="Filepath to IDs for reference population beagle")
 parser.add_argument("--get_reference_af", action="store_true", 
   help="Estimate allele frequencies for reference populations")
-parser.add_argument("--get_reference_fisher", action="store_true", 
-  help="Estimate Fisher information for reference populations")
 
 # Estimate likelihoods of assignment
 parser.add_argument("--pop_af_file", metavar="FILE",
@@ -187,9 +185,19 @@ def main():
 	    af_pop[af_pop > max_val] = max_val
 	    af[:,i] = af_pop
 	    del L_pop, af_pop
-	  np.save(args.out + ".popAF", af)
+	  np.save(args.out + ".pop_af", af)
 	  print("Saved reference population allele frequencies as " + str(args.out) + \
-	       ".popAF.npy (Binary - np.float32)\n")
+	       ".pop_af.npy (Binary - np.float32)\n")
+	  print("Column order of populations is: " + str(pops))
+	  ##  Fisher information
+	  print("Estimating Fisher information.")
+	  f_obs, ne_obs = fisher.fisher_obs(L, af, IDs, args.threads)
+	  np.save(args.out + ".fisher_obs", f_obs)
+	  print("Saved reference population observed Fisher information as " + str(args.out) + \
+	    ".fisher_obs.npy (Binary - np.float32)\n")
+	  np.save(args.out + ".ne_obs", ne_obs)
+	  print("Saved reference population effective sample size estimates as " + str(args.out) + \
+	    ".ne_obs.npy (Binary - np.float32)\n")
 	  print("Column order of populations is: " + str(pops))
 	  if args.loo:
 	    print("Performing leave-one-out cross validation.")
@@ -197,16 +205,6 @@ def main():
 	    np.savetxt(args.out + ".pop_like_LOO.txt", logl_mat_loo, fmt="%.7f")
 	    print("Save leave-one-out cross validation log likelihoods as " + str(args.out) + \
 	         ".pop_like_LOO.txt")
-	    print("Column order of populations is: " + str(pops))
-	  if args.get_reference_fisher:
-	    print("Estimating Fisher information.")
-	    f_obs, ne_obs = fisher.fisher_obs(L, af, IDs, args.threads)
-	    np.save(args.out + ".fisher_obs", f_obs)
-	    print("Saved reference population observed Fisher information as " + str(args.out) + \
-	      ".fisher_obs.npy (Binary - np.float32)\n")
-	    np.save(args.out + ".ne_obs", ne_obs)
-	    print("Saved reference population effective sample size estimates as " + str(args.out) + \
-	      ".ne_obs.npy (Binary - np.float32)\n")
 	    print("Column order of populations is: " + str(pops))
 	  del af
 
