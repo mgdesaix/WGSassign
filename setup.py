@@ -5,30 +5,30 @@ import numpy
 extensions = [Extension(
 				"WGSassign.reader_cy",
 				["WGSassign/reader_cy.pyx"],
-				extra_compile_args=['-Xpreprocessor', '-fopenmp', '-g0'],
-				extra_link_args=['-Xpreprocessor', '-fopenmp'],
+				extra_compile_args=['-fopenmp', '-g0'],
+				extra_link_args=['-fopenmp'],
 				include_dirs=[numpy.get_include()],
 				language="c++"
 			),
 			Extension(
 				"WGSassign.emMAF_cy",
 				["WGSassign/emMAF_cy.pyx"],
-				extra_compile_args=['-Xpreprocessor', '-fopenmp', '-g0'],
-				extra_link_args=['-Xpreprocessor', '-fopenmp'],
+				extra_compile_args=['-fopenmp', '-g0'],
+				extra_link_args=['-fopenmp'],
 				include_dirs=[numpy.get_include()]
 			),
 			Extension(
 				"WGSassign.fisher_cy",
 				["WGSassign/fisher_cy.pyx"],
-				extra_compile_args=['-Xpreprocessor', '-fopenmp', '-g0'],
-				extra_link_args=['-Xpreprocessor', '-fopenmp'],
+				extra_compile_args=['-fopenmp', '-g0'],
+				extra_link_args=['-fopenmp'],
 				include_dirs=[numpy.get_include()]
 			),
 			Extension(
 				"WGSassign.glassy_cy",
 				["WGSassign/glassy_cy.pyx"],
-				extra_compile_args=['-Xpreprocessor', '-fopenmp', '-g0'],
-				extra_link_args=['-Xpreprocessor', '-fopenmp'],
+				extra_compile_args=['-fopenmp', '-g0'],
+				extra_link_args=['-fopenmp'],
 				include_dirs=[numpy.get_include()]
 			)]
 
