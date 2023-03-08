@@ -42,4 +42,19 @@ def fisher_obs(L, af, IDs, t):
     del L_pop, f_pop, ne_pop
   return f_obs, ne_obs
 
+def fisher_obs_ind(L, af, IDs, t):
+  # Number of loci
+  m = L.shape[0]
+  # Number of individuals
+  n = L.shape[1] // 2
+  pops = np.unique(IDs[:,1])
+  ne_ind_full = np.zeros(n, dtype=np.float32)
+  for i in range(n):
+    f_ind = np.zeros(m, dtype=np.float32)
+    pop_i = np.argwhere(pops == IDs[i,1])[0][0]
+    fisher_cy.fisher_obs_ind(L, af, t, i, pop_i, f_ind)
+    ne_ind = np.zeros(m, dtype=np.float32)
+    fisher_cy.ne_obs_ind(f_ind, af, t, pop_i, ne_ind)
+    ne_ind_full[i] = ne_ind_full[i] + np.sum(ne_ind)
+  return ne_ind_full
   

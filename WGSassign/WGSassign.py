@@ -46,6 +46,10 @@ parser.add_argument("--pop_af_IDs", metavar="FILE",
 parser.add_argument("--get_reference_af", action="store_true", 
   help="Estimate allele frequencies for reference populations")
 
+# Individual effective sample size
+parser.add_argument("--ne_obs_ind", action="store_true", 
+  help="Estimate individuals effective sample sizes")
+
 # Estimate likelihoods of assignment
 parser.add_argument("--pop_af_file", metavar="FILE",
 	help="Filepath to reference population allele frequencies")
@@ -199,6 +203,14 @@ def main():
 	  print("Saved reference population effective sample size estimates as " + str(args.out) + \
 	    ".ne_obs.npy (Binary - np.float32)\n")
 	  print("Column order of populations is: " + str(pops))
+	  if args.ne_obs_ind:
+	    print("Estimating individual effective sample sizes.")
+	    ne_ind_full = fisher.fisher_obs_ind(L, af, IDs, args.threads)
+	    ne_ind_df = np.hstack((IDs, ne_ind_full.reshape(-1,1)))
+	    np.savetxt(args.out + ".ne_obs_ind.txt", ne_ind_df, fmt="%.7f")
+	    print("Save individual effective sample sizes as " + str(args.out) + \
+	        ".ne_obs_ind.txt")
+	    
 	  if args.loo:
 	    print("Performing leave-one-out cross validation.")
 	    logl_mat_loo = glassy.loo(L, af, IDs, args.threads, args.maf_iter, args.maf_tole)
