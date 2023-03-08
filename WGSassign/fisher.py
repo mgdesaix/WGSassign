@@ -55,7 +55,6 @@ def fisher_obs_ind(L, af, IDs, t):
     fisher_cy.fisher_obs_ind(L, af, t, i, pop_i, f_ind)
     ne_ind = np.zeros(m, dtype=np.float32)
     fisher_cy.ne_obs_ind(f_ind, af, t, pop_i, ne_ind)
-    print(np.sum(ne_ind))
-    ne_ind_full[i] = ne_ind_full[i] + np.sum(ne_ind)
+    ne_ind_full[i] = ne_ind_full[i] + np.mean(ne_ind)
   return ne_ind_full
   

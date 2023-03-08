@@ -206,11 +206,11 @@ def main():
 	  if args.ne_obs_ind:
 	    print("Estimating individual effective sample sizes.")
 	    ne_ind_full = fisher.fisher_obs_ind(L, af, IDs, args.threads)
-	    np.save(args.out + "ne_ind_full", ne_ind_full)
-	    ne_ind_df = np.hstack((IDs, ne_ind_full.reshape(-1,1)))
-	    np.savetxt(args.out + ".ne_obs_ind.txt", ne_ind_df)
+	    np.savetxt(args.out + "ne_ind_full.txt", ne_ind_full.reshape(-1,1), fmt="%.7f")
+	    # ne_ind_df = np.hstack((IDs, ne_ind_full.reshape(-1,1)))
+	    # np.savetxt(args.out + ".ne_obs_ind.txt", ne_ind_df)
 	    print("Save individual effective sample sizes as " + str(args.out) + \
-	        ".ne_obs_ind.txt")
+	        ".ne_ind_full.txt")
 	    
 	  if args.loo:
 	    print("Performing leave-one-out cross validation.")
