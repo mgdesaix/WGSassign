@@ -50,9 +50,10 @@ def get_L_keep(L, AD, AD_summary_dict, n_threshold, t, i):
         loci_kept += 1
   return L_keep, loci_kept
 
-def get_expected_W_l(L, L_keep, A, AD, AD_summary_dict, e=0.01, t, i, k):
+def get_expected_W_l(L, L_keep, A, AD, AD_summary_dict, t, i, k):
   W_l_obs = 0
   W_l = np.zeros(AD.shape[0], dtype = np.float32)
+  e = 0.01
   for s in np.arange(AD.shape[0]):
     if L_keep[s] == 1:
       A_sk = A[s,k]
@@ -75,9 +76,9 @@ def get_expected_W_l(L, L_keep, A, AD, AD_summary_dict, e=0.01, t, i, k):
           W_l[s] += f_gl_log * P_gl[j] * P_r_a[j] * 1 * AD_summary_dict[iter_key][1][j]
   return W_l_obs, W_l
 
-def get_var_W_l(L, L_keep, A, AD, AD_summary_dict, W_l, e=0.01, t, i, k):
+def get_var_W_l(L, L_keep, A, AD, AD_summary_dict, W_l, t, i, k):
   var_W_l = np.zeros(AD.shape[0], dtype = np.float32)
-  # e = 0.01
+  e = 0.01
   for s in np.arange(AD.shape[0]):
     if L_keep[s] == 1:
       A_sk = A[s,k]
