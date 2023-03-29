@@ -61,6 +61,8 @@ parser.add_argument("--loo", action="store_true",
 	help="Perform leave-one-out cross validation")
 
 # z-score
+parser.add_argument("--get_reference_z", action="store_true", 
+  help="Calculate z-score for reference individuals")
 parser.add_argument("--ind_ad_file", metavar="FILE",
 	help="Filepath to individual allele depths")
 
@@ -256,6 +258,8 @@ def main():
 	    z_mu_ref = np.sum(W_l_ref)
 	    z_var_ref = np.sum(var_W_l_ref)
 	    z_tmp = (W_l_obs_ref - z_mu_ref) / np.sqrt(z_var_ref)
+	    print("Finished individual " + str(i))
+	    print("Z-score: " + str(z_tmp))
 	    
 	    if pop_key not in z_dict.keys():
 	      z_dict[pop_key] = [z_tmp]
