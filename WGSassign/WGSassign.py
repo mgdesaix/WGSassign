@@ -24,8 +24,8 @@ def extract_length(filename):
 parser = argparse.ArgumentParser(prog="WGSassign")
 parser.add_argument("-b", "--beagle", metavar="FILE",
 	help="Filepath to genotype likelihoods in gzipped Beagle format from ANGSD")
-parser.add_argument("-p", "--plink", metavar="FILE-PREFIX",
-	help="Prefix PLINK files (.bed, .bim, .fam)")
+# parser.add_argument("-p", "--plink", metavar="FILE-PREFIX",
+# 	help="Prefix PLINK files (.bed, .bim, .fam)")
 parser.add_argument("-t", "--threads", metavar="INT", type=int, default=1,
 	help="Number of threads")
 parser.add_argument("-o", "--out", metavar="OUTPUT", default="wgsassign",
@@ -59,6 +59,10 @@ parser.add_argument("--get_pop_like", action="store_true",
 # Leave one out assignment accuracy
 parser.add_argument("--loo", action="store_true",
 	help="Perform leave-one-out cross validation")
+
+# z-score
+parser.add_argument("--ind_ad_file", metavar="FILE",
+	help="Filepath to individual allele depths")
 
 # Mixture proportions
 parser.add_argument("--pop_like", metavar="FILE",
@@ -119,6 +123,7 @@ def main():
 	from WGSassign import mixture
 	from WGSassign import fisher
 	from WGSassign import reader_cy
+	from WGSassign import zscore
 
 	# Parse data
 	if args.beagle is not None:
@@ -128,26 +133,6 @@ def main():
 		m = L.shape[0]
 		n = L.shape[1]//2
 		print("Loaded " + str(m) + " sites and " + str(n) + " individuals.")
-	# 	m_old = L.shape[0] # For future reference
-	# else:
-	# 	print("Parsing PLINK files.")
-	# 	# assert args.filter is None, "Please perform sample filtering in PLINK!"
-	# 	# assert args.filterSites is None, "Please perform site filtering in PLINK!"
-	# 	assert os.path.isfile(args.plink + ".bed"), "Bed file doesn't exist!"
-	# 	assert os.path.isfile(args.plink + ".bim"), "Bim file doesn't exist!"
-	# 	assert os.path.isfile(args.plink + ".fam"), "Fam file doesn't exist!"
-	# 
-	# 	# Count number of sites and samples
-	# 	m = extract_length(args.plink + ".bim")
-	# 	n = extract_length(args.plink + ".fam")
-	# 	with open(args.plink + ".bed", "rb") as bed:
-	# 		G = np.fromfile(bed, dtype=np.uint8, offset=3)
-	# 	G_len = ceil(n/4)
-	# 	G = G.reshape(m, G_len)
-	# 	L = np.zeros((m, 2*n), dtype=np.float32)
-	# 	reader_cy.convertBed(L, G, G_len, args.plink_error, m, n, args.threads)
-	# print("Loaded " + str(m) + " sites and " + str(n) + " individuals.")
-	# m_old = L.shape[0] # For future reference
 	
 ####################################
   # Reference population allele frequencies
@@ -168,7 +153,7 @@ def main():
 	  # number of individuals from beagle
 	  n = L.shape[1] // 2
 	  # Check number of individuals from beagle is same as reference file
-	  assert (n == IDs.shape[0]), "Number of individuals in beagle and reference file do not match!"
+	  assert (n == IDs.shape[0]), "Number of individuals in beagle and reference ID file do not match!"
 	  
 	  # For each reference population, estimate the allele frequencies from the beagle file
 	  for i in range(npops):
@@ -193,6 +178,7 @@ def main():
 	  print("Saved reference population allele frequencies as " + str(args.out) + \
 	       ".pop_af.npy (Binary - np.float32)\n")
 	  print("Column order of populations is: " + str(pops))
+	  
 	  ##  Fisher information
 	  print("Estimating Fisher information.")
 	  f_obs, ne_obs = fisher.fisher_obs(L, af, IDs, args.threads)
@@ -203,6 +189,7 @@ def main():
 	  print("Saved reference population effective sample size estimates as " + str(args.out) + \
 	    ".ne_obs.npy (Binary - np.float32)\n")
 	  print("Column order of populations is: " + str(pops))
+	  
 	  if args.ne_obs_ind:
 	    print("Estimating individual effective sample sizes.")
 	    ne_ind_full = fisher.fisher_obs_ind(L, af, IDs, args.threads)
@@ -231,7 +218,54 @@ def main():
 	  np.savetxt(args.out + ".pop_like.txt", logl_mat, fmt="%.7f")
 	  print("Saved population assignment log likelihoods as " + str(args.out) + \
 	       ".pop_like.txt (text)")
-	       
+	############################################################################
+	# Z-score
+	if args.get_reference_z:
+	  # read in data
+	  # Reference pop IDs
+	  print("Parsing reference population ID file.")
+	  assert os.path.isfile(args.pop_af_IDs), "Reference population ID file does not exist!!"
+	  IDs = np.loadtxt(args.pop_af_IDs, delimiter = "\t", dtype = "str")
+	  # Reference pop allele frequencies
+	  print("Parsing population allele frequency file.")
+	  assert os.path.isfile(args.pop_af_file), "Population allele frequency file does not exist!!"
+	  A = np.load(args.pop_af_file)
+	  # Reference pop allele depths
+	  print("Parsing individual allele depths file.")
+	  assert os.path.isfile(args.ind_ad_file), "Individual allele depths file does not exist!"
+	  AD = np.load(args.ind_ad_file)
+	  
+	  # Unique reference pop names
+	  pops = np.unique(IDs[:,1])
+	  # number of individuals from beagle
+	  n = L.shape[1] // 2
+	  # Check number of individuals from beagle is same as reference file
+	  assert (n == IDs.shape[0]), "Number of individuals in beagle and reference ID file do not match!"
+	  z_dict = {}
+	  for i in range(n):
+	    pop_key = IDs[i,1]
+	    pop_index = np.argwhere(pops == pop_key)[0][0]
+	    i_start = i * 2
+	    i_end = i_start + 2
+	    L_ind0 = L[:,i_start:i_end]
+	    ad_ind0 = AD[:,i_start:i_end]
+	    AD_GL_dict_ref, AD_summary_dict_ref = zscore.AD_summary(ad_ind0, L_ind0)
+	    L_keep_ref = zscore.get_L_keep(ad_ind0, AD_summary_dict_ref, n_threshold = 1000)
+	    W_l_obs_ref, W_l_ref = zscore.get_expected_W_l(L_ind0, L_keep_ref, ad_ind0, mafs_pop0, AD_summary_dict_ref)
+	    var_W_l_ref = zscore.get_var_W_l(L_ind0, L_keep_ref, ad_ind0, mafs_pop0, AD_summary_dict_ref, W_l_ref)
+	    z_mu_ref = np.sum(W_l_ref)
+	    z_var_ref = np.sum(var_W_l_ref)
+	    z_tmp = (W_l_obs_ref - z_mu_ref) / np.sqrt(z_var_ref)
+	    
+	    if pop_key not in z_dict.keys():
+	      z_dict[pop_key] = [z_tmp]
+	    else:
+	      z_dict[pop_key].append([z_tmp])
+	  np.save(args.out + ".z_reference.npy", z_dict)
+	  print("Saved reference population z-scores as " + str(args.out) + \
+	       ".z_reference.npy (Binary - np.float32)")
+	  
+	############################################################################  
 	# Mixture proportions
 	if args.get_em_mix:
 	  print("Parsing population assignment likelihood file.")
