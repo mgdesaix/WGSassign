@@ -49,7 +49,7 @@ def get_L_keep(ad_ind0, L_ind0, AD_summary_dict, n_threshold):
       else:
         L_keep[i] = 1
         loci_kept += 1
-  return L_keep
+  return L_keep, loci_kept
 
 def get_expected_W_l(L_ind0, L_keep, ad_ind0, mafs_pop0, AD_summary_dict, e=0.01):
   W_l_obs = 0

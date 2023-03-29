@@ -65,6 +65,8 @@ parser.add_argument("--get_reference_z", action="store_true",
   help="Calculate z-score for reference individuals")
 parser.add_argument("--ind_ad_file", metavar="FILE",
 	help="Filepath to individual allele depths")
+parser.add_argument("--allele_count_threshold", metavar="INT", type=int, default=1000,
+	help="Minimum number of loci needed to keep a specific allele count combination (1000)")
 
 # Mixture proportions
 parser.add_argument("--pop_like", metavar="FILE",
@@ -252,13 +254,14 @@ def main():
 	    L_ind0 = L[:,i_start:i_end]
 	    ad_ind0 = AD[:,i_start:i_end]
 	    AD_GL_dict_ref, AD_summary_dict_ref = zscore.AD_summary(ad_ind0, L_ind0)
-	    L_keep_ref = zscore.get_L_keep(ad_ind0, L_ind0, AD_summary_dict_ref, n_threshold = 1000)
+	    L_keep_ref, loci_kept = zscore.get_L_keep(ad_ind0, L_ind0, AD_summary_dict_ref, n_threshold = args.allele_count_threshold)
 	    W_l_obs_ref, W_l_ref = zscore.get_expected_W_l(L_ind0, L_keep_ref, ad_ind0, mafs_pop0, AD_summary_dict_ref)
 	    var_W_l_ref = zscore.get_var_W_l(L_ind0, L_keep_ref, ad_ind0, mafs_pop0, AD_summary_dict_ref, W_l_ref)
 	    z_mu_ref = np.sum(W_l_ref)
 	    z_var_ref = np.sum(var_W_l_ref)
 	    z_tmp = (W_l_obs_ref - z_mu_ref) / np.sqrt(z_var_ref)
 	    print("Finished individual " + str(i))
+	    print("Loci used: " + str(loci_kept))
 	    print("Z-score: " + str(z_tmp))
 	    
 	    if pop_key not in z_dict.keys():
