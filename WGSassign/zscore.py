@@ -25,7 +25,7 @@ def AD_summary(ad_ind0, L_ind0):
     AD_summary_dict[key] = [len(value), np.mean(AD_GL_dict[key], axis = 0)]
   return AD_GL_dict, AD_summary_dict
 
-def get_L_keep(ad_ind0, AD_summary_dict, n_threshold):
+def get_L_keep(ad_ind0, L_ind0, AD_summary_dict, n_threshold):
   L_keep = np.empty(ad_ind0.shape[0], dtype = np.int32)
   # n_threshold = 1000
   loci_kept = 0
