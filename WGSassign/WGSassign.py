@@ -253,6 +253,7 @@ def main():
 	    i_end = i_start + 2
 	    L_ind0 = L[:,i_start:i_end]
 	    ad_ind0 = AD[:,i_start:i_end]
+	    mafs_pop0 = A[:,pop_index]
 	    AD_GL_dict_ref, AD_summary_dict_ref = zscore.AD_summary(ad_ind0, L_ind0)
 	    L_keep_ref, loci_kept = zscore.get_L_keep(ad_ind0, L_ind0, AD_summary_dict_ref, n_threshold = args.allele_count_threshold)
 	    W_l_obs_ref, W_l_ref = zscore.get_expected_W_l(L_ind0, L_keep_ref, ad_ind0, mafs_pop0, AD_summary_dict_ref)
