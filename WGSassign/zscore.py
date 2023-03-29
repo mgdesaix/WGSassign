@@ -6,20 +6,18 @@ __author__ = "Matt DeSaix"
 
 # libraries
 import numpy as np
+from WGSassign import zscore_cy
 
-# Import scripts
-# from WGSassign import glassy_cy
-# from WGSassign import emMAF
-
-def AD_summary(ad_ind0, L_ind0):
-  AD_GL_dict = {}
-  for i in np.arange(ad_ind0.shape[0]):
-    # The key is the allele depth combination
-    key = tuple(ad_ind0[i,])
-    if key not in AD_GL_dict.keys():
-      AD_GL_dict[key] = [[L_ind0[i,0], L_ind0[i,1], (1 - L_ind0[i,0] - L_ind0[i,1])]]
-    else:
-      AD_GL_dict[key].append([L_ind0[i,0], L_ind0[i,1], (1 - L_ind0[i,0] - L_ind0[i,1])])
+def AD_summary(AD, L, t, i):
+  # AD_GL_dict = {}
+  # for i in np.arange(ad_ind0.shape[0]):
+  #   # The key is the allele depth combination
+  #   key = tuple(ad_ind0[i,])
+  #   if key not in AD_GL_dict.keys():
+  #     AD_GL_dict[key] = [[L_ind0[i,0], L_ind0[i,1], (1 - L_ind0[i,0] - L_ind0[i,1])]]
+  #   else:
+  #     AD_GL_dict[key].append([L_ind0[i,0], L_ind0[i,1], (1 - L_ind0[i,0] - L_ind0[i,1])])
+  AD_GL_dict = zscore_cy.AD_summary(AD, L, t, i)
   AD_summary_dict = {}
   for key, value in AD_GL_dict.items():
     AD_summary_dict[key] = [len(value), np.mean(AD_GL_dict[key], axis = 0)]
