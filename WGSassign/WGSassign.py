@@ -268,7 +268,7 @@ def main():
 	    if pop_key not in z_dict.keys():
 	      z_dict[pop_key] = [z_tmp]
 	    else:
-	      z_dict[pop_key].append([z_tmp])
+	      z_dict[pop_key].append(z_tmp)
 	  np.save(args.out + ".z_reference.npy", z_dict)
 	  print("Saved reference population z-scores as " + str(args.out) + \
 	       ".z_reference.npy (Binary - np.float32)")
