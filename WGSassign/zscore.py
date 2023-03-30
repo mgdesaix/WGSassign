@@ -55,7 +55,8 @@ def get_expected_W_l(L, L_keep, A, AD, AD_summary_dict, t, i, k):
   W_l_obs = 0
   W_l = np.zeros(L_keep.shape[0], dtype = np.float32)
   e = 0.01
-  for s in L_keep:
+  for s_index in range(L_keep.shape[0]):
+    s = L_keep[s_index]
     A_sk = A[s,k]
     P_gl = [(1-A_sk)*(1-A_sk), 2*A_sk*(1-A_sk), A_sk*A_sk]
     f_gl = [L[s,2*i] * P_gl[0],L[s,2*i+1] * P_gl[1],(1-L[s,2*i]-L[s,2*i+1]) * P_gl[2]]
@@ -73,13 +74,14 @@ def get_expected_W_l(L, L_keep, A, AD, AD_summary_dict, t, i, k):
       ad_factorial = np.math.factorial(Dl) / (np.math.factorial(Aa)*np.math.factorial(Ar))
       P_r_a = [ad_factorial*((1-e)**Ar)*(e**Aa), ad_factorial*((1/2)**Dl), ad_factorial*((1-e)**Aa)*(e**Ar)]
       for j in range(3):
-        W_l[s] += f_gl_log * P_gl[j] * P_r_a[j] * 1 * AD_summary_dict[iter_key][1][j]
+        W_l[s_index] += f_gl_log * P_gl[j] * P_r_a[j] * 1 * AD_summary_dict[iter_key][1][j]
   return W_l_obs, W_l
 
 def get_var_W_l(L, L_keep, A, AD, AD_summary_dict, W_l, t, i, k):
   var_W_l = np.zeros(L_keep.shape[0], dtype = np.float32)
   e = 0.01
-  for s in L_keep:
+  for s_index in range(L_keep.shape[0]):
+    s = L_keep[s_index]
     A_sk = A[s,k]
     P_gl = [(1-A_sk)*(1-A_sk), 2*A_sk*(1-A_sk), A_sk*A_sk]
     f_gl = [L[s,2*i] * P_gl[0],L[s,2*i+1] * P_gl[1],(1-L[s,2*i]-L[s,2*i+1]) * P_gl[2]]
@@ -96,5 +98,5 @@ def get_var_W_l(L, L_keep, A, AD, AD_summary_dict, W_l, t, i, k):
       ad_factorial = np.math.factorial(Dl) / (np.math.factorial(Aa)*np.math.factorial(Ar))
       P_r_a = [ad_factorial*((1-e)**Ar)*(e**Aa), ad_factorial*((1/2)**Dl), ad_factorial*((1-e)**Aa)*(e**Ar)]
       for j in range(3):
-        var_W_l[s] += (W_l[s]-f_gl_log)**2 * P_gl[j] * P_r_a[j] * 1 * AD_summary_dict[iter_key][1][j]
+        var_W_l[s_index] += (W_l[s_index]-f_gl_log)**2 * P_gl[j] * P_r_a[j] * 1 * AD_summary_dict[iter_key][1][j]
   return var_W_l
