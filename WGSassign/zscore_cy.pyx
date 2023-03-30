@@ -33,9 +33,10 @@ cpdef expected_W_l(float[:,::1] L, float[::1] L_keep, float[:,::1] A, float[:,::
                     P_r_a0 = ad_factorial*((1.0-e)**Ar)*(e**Aa)
                     P_r_a1 = ad_factorial*((0.5)**Dl)
                     P_r_a2 = ad_factorial*((1.0-e)**Aa)*(e**Ar)
-                    W_l[s_index] = W_l[s_index] + f_gl_log * P_gl0 * P_r_a0 * AD_summary_dict[iter_key][1][0]
-                    W_l[s_index] = W_l[s_index] + f_gl_log * P_gl1 * P_r_a1 * AD_summary_dict[iter_key][1][1]
-                    W_l[s_index] = W_l[s_index] + f_gl_log * P_gl2 * P_r_a2 * AD_summary_dict[iter_key][1][2]
+                    with gil:
+                        W_l[s_index] = W_l[s_index] + f_gl_log * P_gl0 * P_r_a0 * AD_summary_dict[iter_key][1][0]
+                        W_l[s_index] = W_l[s_index] + f_gl_log * P_gl1 * P_r_a1 * AD_summary_dict[iter_key][1][1]
+                        W_l[s_index] = W_l[s_index] + f_gl_log * P_gl2 * P_r_a2 * AD_summary_dict[iter_key][1][2]
                     
                     
                     
