@@ -48,7 +48,7 @@ def get_L_keep(L, AD, AD_summary_dict, n_threshold, t, i):
       else:
         L_keep[s] = 1
         loci_kept += 1
-  L_keep_final = np.argwhere(L_keep == 1).reshape(-1)
+  L_keep_final = np.argwhere(L_keep == 1).reshape(-1).astype(np.int32)
   return L_keep_final, loci_kept
 
 def get_expected_W_l(L, L_keep, A, AD, AD_summary_dict, t, i, k):
