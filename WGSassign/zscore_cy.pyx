@@ -24,12 +24,12 @@ cpdef expected_W_l(float[:,::1] L, float[::1] L_keep, float[:,::1] A, float[:,::
                 f_gl2 = (1-L[s,2*i]-L[s,2*i+1]) * P_gl2
                 f_gl_log = log(f_gl0 + f_gl1 + f_gl2)
                 W_l_obs = W_l_obs + f_gl_log
-                key = str([AD[s,2*i], AD[s,2*i+1]])
-                Dl = AD[s,2*i] + AD[s,2*i+1]
-                for Aa in range(Dl+1):
-                    Ar = Dl - Aa
-                    iter_key = str([Ar, Aa])
-                    with gil:
+                with gil:
+                    key = str([AD[s,2*i], AD[s,2*i+1]])
+                    Dl = AD[s,2*i] + AD[s,2*i+1]
+                    for Aa in range(Dl+1):
+                        Ar = Dl - Aa
+                        iter_key = str([Ar, Aa])
                         ad_factorial = np.math.factorial(Dl) / (np.math.factorial(Aa)*np.math.factorial(Ar))
                         P_r_a0 = ad_factorial*((1.0-e)**Ar)*(e**Aa)
                         P_r_a1 = ad_factorial*((0.5)**Dl)
