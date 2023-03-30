@@ -52,10 +52,10 @@ def get_L_keep(L, AD, AD_summary_dict, n_threshold, t, i):
   return L_keep_final, loci_kept
 
 def get_expected_W_l(L, L_keep, A, AD, AD_summary_dict, t, i, k):
-  W_l_obs = 0
+  W_l_obs_list = np.zeros(L_keep.shape[0], dtype = np.float32)
   W_l = np.zeros(L_keep.shape[0], dtype = np.float32)
   e = 0.01
-  zscore_cy.expected_W_l(L, L_keep, A, AD, AD_summary_dict, t, i, k, e, W_l_obs, W_l)
+  zscore_cy.expected_W_l(L, L_keep, A, AD, AD_summary_dict, t, i, k, e, W_l_obs_list, W_l)
   # for s_index in range(L_keep.shape[0]):
   #   s = L_keep[s_index]
   #   A_sk = A[s,k]
@@ -76,6 +76,7 @@ def get_expected_W_l(L, L_keep, A, AD, AD_summary_dict, t, i, k):
   #     P_r_a = [ad_factorial*((1-e)**Ar)*(e**Aa), ad_factorial*((1/2)**Dl), ad_factorial*((1-e)**Aa)*(e**Ar)]
   #     for j in range(3):
   #       W_l[s_index] += f_gl_log * P_gl[j] * P_r_a[j] * 1 * AD_summary_dict[iter_key][1][j]
+  W_l_obs = np.sum(W_l_obs_list, dtype=float)
   return W_l_obs, W_l
 
 def get_var_W_l(L, L_keep, A, AD, AD_summary_dict, W_l, t, i, k):

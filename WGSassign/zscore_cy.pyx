@@ -7,7 +7,7 @@ from libc.math cimport log
 
 # Calculate zscore
 # L is the reader_cy read beagle file, matrix M x (2 * N)
-cpdef expected_W_l(float[:,::1] L, int[::1] L_keep, float[:,::1] A, int[:,::1] AD, dict AD_summary_dict, int t, int i, int k, float e, float W_l_obs, float[::1] W_l):
+cpdef expected_W_l(float[:,::1] L, int[::1] L_keep, float[:,::1] A, int[:,::1] AD, dict AD_summary_dict, int t, int i, int k, float e, float[::1] W_l_obs_list, float[::1] W_l):
     cdef int m = L.shape[0]
     cdef int s, s_index, Dl, Aa, Ar
     cdef float A_sk, P_gl0, P_gl1, P_gl2, f_gl0, f_gl1, f_gl2, f_gl_log, ad_factorial, P_r_a0, P_r_a1, P_r_a2
@@ -23,7 +23,7 @@ cpdef expected_W_l(float[:,::1] L, int[::1] L_keep, float[:,::1] A, int[:,::1] A
                 f_gl1 = L[s,2*i+1] * P_gl1
                 f_gl2 = (1-L[s,2*i]-L[s,2*i+1]) * P_gl2
                 f_gl_log = log(f_gl0 + f_gl1 + f_gl2)
-                W_l_obs = W_l_obs + f_gl_log
+                W_l_obs_list[s_index] = W_l_obs_list[s_index] + f_gl_log
                 with gil:
                     key = str([AD[s,2*i], AD[s,2*i+1]])
                     Dl = AD[s,2*i] + AD[s,2*i+1]
