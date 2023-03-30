@@ -55,7 +55,7 @@ def get_expected_W_l(L, L_keep, A, AD, AD_summary_dict, t, i, k):
   W_l_obs = 0
   W_l = np.zeros(L_keep.shape[0], dtype = np.float32)
   e = 0.01
-  for s in range(L_keep.shape[0]):
+  for s in L_keep:
     A_sk = A[s,k]
     P_gl = [(1-A_sk)*(1-A_sk), 2*A_sk*(1-A_sk), A_sk*A_sk]
     f_gl = [L[s,2*i] * P_gl[0],L[s,2*i+1] * P_gl[1],(1-L[s,2*i]-L[s,2*i+1]) * P_gl[2]]
@@ -79,7 +79,7 @@ def get_expected_W_l(L, L_keep, A, AD, AD_summary_dict, t, i, k):
 def get_var_W_l(L, L_keep, A, AD, AD_summary_dict, W_l, t, i, k):
   var_W_l = np.zeros(L_keep.shape[0], dtype = np.float32)
   e = 0.01
-  for s in range(L_keep.shape[0]):
+  for s in L_keep:
     A_sk = A[s,k]
     P_gl = [(1-A_sk)*(1-A_sk), 2*A_sk*(1-A_sk), A_sk*A_sk]
     f_gl = [L[s,2*i] * P_gl[0],L[s,2*i+1] * P_gl[1],(1-L[s,2*i]-L[s,2*i+1]) * P_gl[2]]
