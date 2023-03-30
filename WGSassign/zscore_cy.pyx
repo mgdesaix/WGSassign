@@ -19,9 +19,9 @@ cpdef expected_W_l(float[:,::1] L, int[::1] L_keep, float[:,::1] A, int[:,::1] A
                 P_gl0 = (1-A_sk)*(1-A_sk)
                 P_gl1 = 2*(1-A_sk)*A_sk
                 P_gl2 = A_sk*A_sk
-                f_gl0 = L[s,2*i] * P_gl0
+                f_gl0 = L[s,2*i+0] * P_gl0
                 f_gl1 = L[s,2*i+1] * P_gl1
-                f_gl2 = (1-L[s,2*i]-L[s,2*i+1]) * P_gl2
+                f_gl2 = (1-L[s,2*i+0]-L[s,2*i+1]) * P_gl2
                 f_gl_log = log(f_gl0 + f_gl1 + f_gl2)
                 W_l_obs_list[s_index] = W_l_obs_list[s_index] + f_gl_log
                 with gil:
