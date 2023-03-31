@@ -249,19 +249,14 @@ def main():
 	  for i in range(n):
 	    pop_key = IDs[i,1]
 	    k = np.argwhere(pops == pop_key)[0][0]
-	    i_start = i * 2
-	    i_end = i_start + 2
-	    # L_ind0 = L[:,i_start:i_end]
-	    # ad_ind0 = AD[:,i_start:i_end]
-	    # mafs_pop0 = A[:,k]
 	    AD_summary_dict, AD_array = zscore.AD_summary(L, AD, i, args.allele_count_threshold)
 	    L_keep, loci_kept = zscore.get_L_keep(L, AD, AD_summary_dict, AD_array, i)
-	    AD_factorial, AD_like = zscore.get_factorials(AD_array, 0.01)
+	    AD_factorial, AD_like = zscore.get_factorials(AD_array, AD_summary_dict, 0.01)
 	    W_l_obs, W_l = zscore.get_expected_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, args.threads, i, k)
 	    var_W_l = zscore.get_var_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, W_l, args.threads, i, k)
-	    z_mu_ref = np.sum(W_l_ref)
-	    z_var_ref = np.sum(var_W_l_ref)
-	    z_tmp = (W_l_obs_ref - z_mu_ref) / np.sqrt(z_var_ref)
+	    z_mu = np.sum(W_l)
+	    z_var = np.sum(var_W_l)
+	    z_tmp = (W_l_obs - z_mu) / np.sqrt(z_var)
 	    print("Finished individual " + str(i))
 	    print("Loci used: " + str(loci_kept))
 	    print("Z-score: " + str(z_tmp))
