@@ -6,7 +6,7 @@ __author__ = "Matt DeSaix"
 
 # libraries
 import numpy as np
-from WGSassign import zscore_cy
+# from WGSassign import zscore_cy
 
 def AD_summary(L, AD, i, n_threshold):
   AD_GL_dict = {}
