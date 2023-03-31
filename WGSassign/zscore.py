@@ -6,7 +6,7 @@ __author__ = "Matt DeSaix"
 
 # libraries
 import numpy as np
-# from WGSassign import zscore_cy
+from WGSassign import zscore_cy
 
 def AD_summary(L, AD, i, n_threshold):
   AD_GL_dict = {}
@@ -73,22 +73,22 @@ def get_factorials(AD_array, AD_summary_dict, e):
 def get_expected_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, t, i, k):
   W_l_obs_list = np.zeros(L_keep.shape[0], dtype = np.float32)
   W_l = np.zeros(L_keep.shape[0], dtype = np.float32)
-  # zscore_cy.expected_W_l(L, L_keep, A, AD, AD_summary_dict, t, i, k, e, W_l_obs_list, W_l)
-  for s_index in range(L_keep.shape[0]):
-    s = L_keep[s_index]
-    A_sk = A[s,k]
-    P_gl = [(1-A_sk)*(1-A_sk), 2*A_sk*(1-A_sk), A_sk*A_sk]
-    f_gl = [L[s,2*i] * P_gl[0],L[s,2*i+1] * P_gl[1],(1-L[s,2*i]-L[s,2*i+1]) * P_gl[2]]
-    f_gl_log = np.log(f_gl[0] + f_gl[1] + f_gl[2])
-    W_l_obs_list[s_index] = f_gl_log
-    # Getting the total depth
-    Dl = AD[s,2*i] + AD[s,2*i+1]
-    for Aa in np.arange(Dl+1):
-      Ar = Dl - Aa
-      ad_index = np.argwhere((AD_array[:,0] == Ar) & (AD_array[:,1] == Aa))[0][0]
-      W_l[s_index] = W_l[s_index] + f_gl_log * P_gl[0] * AD_factorial[ad_index,0] * AD_like[ad_index,0]
-      W_l[s_index] = W_l[s_index] + f_gl_log * P_gl[1] * AD_factorial[ad_index,1] * AD_like[ad_index,1]
-      W_l[s_index] = W_l[s_index] + f_gl_log * P_gl[2] * AD_factorial[ad_index,2] * AD_like[ad_index,2]
+  zscore_cy.expected_W_l(L, L_keep, A, AD, AD_summary_dict, t, i, k, W_l_obs_list, W_l)
+  # for s_index in range(L_keep.shape[0]):
+  #   s = L_keep[s_index]
+  #   A_sk = A[s,k]
+  #   P_gl = [(1-A_sk)*(1-A_sk), 2*A_sk*(1-A_sk), A_sk*A_sk]
+  #   f_gl = [L[s,2*i] * P_gl[0],L[s,2*i+1] * P_gl[1],(1-L[s,2*i]-L[s,2*i+1]) * P_gl[2]]
+  #   f_gl_log = np.log(f_gl[0] + f_gl[1] + f_gl[2])
+  #   W_l_obs_list[s_index] = f_gl_log
+  #   # Getting the total depth
+  #   Dl = AD[s,2*i] + AD[s,2*i+1]
+  #   for Aa in np.arange(Dl+1):
+  #     Ar = Dl - Aa
+  #     ad_index = np.argwhere((AD_array[:,0] == Ar) & (AD_array[:,1] == Aa))[0][0]
+  #     W_l[s_index] = W_l[s_index] + f_gl_log * P_gl[0] * AD_factorial[ad_index,0] * AD_like[ad_index,0]
+  #     W_l[s_index] = W_l[s_index] + f_gl_log * P_gl[1] * AD_factorial[ad_index,1] * AD_like[ad_index,1]
+  #     W_l[s_index] = W_l[s_index] + f_gl_log * P_gl[2] * AD_factorial[ad_index,2] * AD_like[ad_index,2]
   W_l_obs = np.sum(W_l_obs_list, dtype=float)
   return W_l_obs, W_l
 
