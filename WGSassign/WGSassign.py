@@ -254,10 +254,11 @@ def main():
 	    # L_ind0 = L[:,i_start:i_end]
 	    # ad_ind0 = AD[:,i_start:i_end]
 	    # mafs_pop0 = A[:,k]
-	    AD_GL_dict_ref, AD_summary_dict_ref = zscore.AD_summary(L, AD, args.threads, i)
-	    L_keep_ref, loci_kept = zscore.get_L_keep(L, AD, AD_summary_dict_ref, args.allele_count_threshold, args.threads, i)
-	    W_l_obs_ref, W_l_ref = zscore.get_expected_W_l(L, L_keep_ref, A, AD, AD_summary_dict_ref, args.threads, i, k)
-	    var_W_l_ref = zscore.get_var_W_l(L, L_keep_ref, A, AD, AD_summary_dict_ref, W_l_ref, args.threads, i, k)
+	    AD_summary_dict, AD_array = zscore.AD_summary(L, AD, i, args.allele_count_threshold)
+	    L_keep, loci_kept = zscore.get_L_keep(L, AD, AD_summary_dict, AD_array, i)
+	    AD_factorial, AD_like = zscore.get_factorials(AD_array, 0.01)
+	    W_l_obs, W_l = zscore.get_expected_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, args.threads, i, k)
+	    var_W_l = zscore.get_var_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, W_l, args.threads, i, k)
 	    z_mu_ref = np.sum(W_l_ref)
 	    z_var_ref = np.sum(var_W_l_ref)
 	    z_tmp = (W_l_obs_ref - z_mu_ref) / np.sqrt(z_var_ref)
