@@ -76,7 +76,7 @@ def get_factorials(AD_array, AD_summary_dict, e):
 def get_expected_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, AD_index, t, i, k):
   W_l_obs_list = np.zeros(L_keep.shape[0], dtype = np.float32)
   W_l = np.zeros(L_keep.shape[0], dtype = np.float32)
-  zscore_cy.expected_W_l(L, L_keep, A, AD, AD_summary_dict, t, i, k, W_l_obs_list, W_l)
+  zscore_cy.expected_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, AD_index, t, i, k, W_l_obs_list, W_l)
   # for s_index in range(L_keep.shape[0]):
   #   s = L_keep[s_index]
   #   A_sk = A[s,k]
