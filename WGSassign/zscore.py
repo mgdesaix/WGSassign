@@ -85,7 +85,7 @@ def get_expected_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, t, i, k)
     Dl = AD[s,2*i] + AD[s,2*i+1]
     for Aa in np.arange(Dl+1):
       Ar = Dl - Aa
-      ad_index = np.argwhere((AD_summary_array_filtered[:,0] == Ar) & (AD_summary_array_filtered[:,1] == Aa))[0][0]
+      ad_index = np.argwhere((AD_array[:,0] == Ar) & (AD_array[:,1] == Aa))[0][0]
       W_l[s_index] = W_l[s_index] + f_gl_log * P_gl[0] * AD_factorial[ad_index,0] * AD_like[ad_index,0]
       W_l[s_index] = W_l[s_index] + f_gl_log * P_gl[1] * AD_factorial[ad_index,1] * AD_like[ad_index,1]
       W_l[s_index] = W_l[s_index] + f_gl_log * P_gl[2] * AD_factorial[ad_index,2] * AD_like[ad_index,2]
@@ -104,7 +104,7 @@ def get_var_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, W_l, t, i, k)
     Dl = AD[s,2*i] + AD[s,2*i+1]
     for Aa in np.arange(Dl+1):
       Ar = Dl - Aa
-      ad_index = np.argwhere((AD_summary_array_filtered[:,0] == Ar) & (AD_summary_array_filtered[:,1] == Aa))[0][0]
+      ad_index = np.argwhere((AD_array[:,0] == Ar) & (AD_array[:,1] == Aa))[0][0]
       var_W_l[s_index] = var_W_l[s_index] + (W_l[s_index]-f_gl_log)**2 * P_gl[0] * AD_factorial[ad_index,0] * AD_like[ad_index,0]
       var_W_l[s_index] = var_W_l[s_index] + (W_l[s_index]-f_gl_log)**2 * P_gl[1] * AD_factorial[ad_index,1] * AD_like[ad_index,1]
       var_W_l[s_index] = var_W_l[s_index] + (W_l[s_index]-f_gl_log)**2 * P_gl[2] * AD_factorial[ad_index,2] * AD_like[ad_index,2]
