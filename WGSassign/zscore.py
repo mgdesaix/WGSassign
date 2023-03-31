@@ -56,8 +56,8 @@ def get_L_keep(L, AD, AD_summary_dict, AD_array, i):
   return L_keep_final, loci_kept
 
 def get_factorials(AD_array, AD_summary_dict, e):
-  AD_factorial = np.zeros((AD_array.shape[0], 3), dtype = float)
-  AD_like = np.zeros((AD_array.shape[0], 3), dtype = float)
+  AD_factorial = np.zeros((AD_array.shape[0], 3), dtype = np.float32)
+  AD_like = np.zeros((AD_array.shape[0], 3), dtype = np.float32)
   AD_index = np.zeros((np.max(AD_array[:,0])+1, np.max(AD_array[:,1])+1), dtype = np.int32)
   for i in range(AD_factorial.shape[0]):
     Ar = AD_array[i,0]
