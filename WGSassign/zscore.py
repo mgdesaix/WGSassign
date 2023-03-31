@@ -58,9 +58,12 @@ def get_L_keep(L, AD, AD_summary_dict, AD_array, i):
 def get_factorials(AD_array, AD_summary_dict, e):
   AD_factorial = np.zeros((AD_array.shape[0], 3), dtype = float)
   AD_like = np.zeros((AD_array.shape[0], 3), dtype = float)
+  AD_index = np.zeros((np.max(AD_array[:,0])+1, np.max(AD_array[:,1])+1), dtype = np.int32)
   for i in range(AD_factorial.shape[0]):
     Ar = AD_array[i,0]
     Aa = AD_array[i,1]
+    ad_index = np.argwhere((AD_array[:,0] == Ar) & (AD_array[:,1] == Aa))[0][0]
+    AD_index[Ar, Aa] = ad_index
     Dl = Aa + Ar
     ad_factorial = np.math.factorial(Dl) / (np.math.factorial(Aa)*np.math.factorial(Ar))
     P_r_a0 = ad_factorial*((1-e)**Ar)*(e**Aa)
@@ -68,7 +71,7 @@ def get_factorials(AD_array, AD_summary_dict, e):
     P_r_a2 = ad_factorial*((1-e)**Aa)*(e**Ar)
     AD_factorial[i,:] = [P_r_a0, P_r_a1, P_r_a2]
     AD_like[i:] = AD_summary_dict[tuple([Ar, Aa])][1]
-  return AD_factorial, AD_like
+  return AD_factorial, AD_like, AD_index
 
 def get_expected_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, t, i, k):
   W_l_obs_list = np.zeros(L_keep.shape[0], dtype = np.float32)

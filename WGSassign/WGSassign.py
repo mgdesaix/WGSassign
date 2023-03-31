@@ -251,8 +251,8 @@ def main():
 	    k = np.argwhere(pops == pop_key)[0][0]
 	    AD_summary_dict, AD_array = zscore.AD_summary(L, AD, i, args.allele_count_threshold)
 	    L_keep, loci_kept = zscore.get_L_keep(L, AD, AD_summary_dict, AD_array, i)
-	    AD_factorial, AD_like = zscore.get_factorials(AD_array, AD_summary_dict, 0.01)
-	    W_l_obs, W_l = zscore.get_expected_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, args.threads, i, k)
+	    AD_factorial, AD_like, AD_index = zscore.get_factorials(AD_array, AD_summary_dict, 0.01)
+	    W_l_obs, W_l = zscore.get_expected_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, AD_index, args.threads, i, k)
 	    var_W_l = zscore.get_var_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, W_l, args.threads, i, k)
 	    z_mu = np.sum(W_l)
 	    z_var = np.sum(var_W_l)
