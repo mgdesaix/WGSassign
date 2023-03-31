@@ -61,8 +61,8 @@ parser.add_argument("--loo", action="store_true",
 	help="Perform leave-one-out cross validation")
 
 # z-score
-parser.add_argument("--get_reference_z", action="store_true", 
-  help="Calculate z-score for reference individuals")
+parser.add_argument("--get_z_score", action="store_true", 
+  help="Calculate z-score for individuals")
 parser.add_argument("--ind_ad_file", metavar="FILE",
 	help="Filepath to individual allele depths")
 parser.add_argument("--allele_count_threshold", metavar="INT", type=int, default=1000,
@@ -224,11 +224,11 @@ def main():
 	       ".pop_like.txt (text)")
 	############################################################################
 	# Z-score
-	if args.get_reference_z:
+	if args.get_z_score:
 	  # read in data
 	  # Reference pop IDs
-	  print("Parsing reference population ID file.")
-	  assert os.path.isfile(args.pop_af_IDs), "Reference population ID file does not exist!!"
+	  print("Parsing population ID file.")
+	  assert os.path.isfile(args.pop_af_IDs), "Population ID file does not exist!!"
 	  IDs = np.loadtxt(args.pop_af_IDs, delimiter = "\t", dtype = "str")
 	  # Reference pop allele frequencies
 	  print("Parsing population allele frequency file.")
@@ -245,7 +245,7 @@ def main():
 	  n = L.shape[1] // 2
 	  # Check number of individuals from beagle is same as reference file
 	  assert (n == IDs.shape[0]), "Number of individuals in beagle and reference ID file do not match!"
-	  z_dict = {}
+	  z_out = np.empty((n, 1), dtype = np.float32)
 	  for i in range(n):
 	    pop_key = IDs[i,1]
 	    k = np.argwhere(pops == pop_key)[0][0]
@@ -260,14 +260,10 @@ def main():
 	    print("Finished individual " + str(i))
 	    print("Loci used: " + str(loci_kept))
 	    print("Z-score: " + str(z_tmp))
-	    
-	    if pop_key not in z_dict.keys():
-	      z_dict[pop_key] = [z_tmp]
-	    else:
-	      z_dict[pop_key].append(z_tmp)
-	  np.save(args.out + ".z_reference.npy", z_dict)
-	  print("Saved reference population z-scores as " + str(args.out) + \
-	       ".z_reference.npy (Binary - np.float32)")
+	    z_out[i,0] = z_tmp
+	  np.savetxt(args.out + ".z_ind.txt", z_out, fmt="%.7f")
+	  print("Saved individual z-scores as " + str(args.out) + \
+	       ".z_ind.txt (text)")
 	  
 	############################################################################  
 	# Mixture proportions
