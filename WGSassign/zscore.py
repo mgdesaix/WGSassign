@@ -80,7 +80,7 @@ def get_expected_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, t, i, k)
     P_gl = [(1-A_sk)*(1-A_sk), 2*A_sk*(1-A_sk), A_sk*A_sk]
     f_gl = [L[s,2*i] * P_gl[0],L[s,2*i+1] * P_gl[1],(1-L[s,2*i]-L[s,2*i+1]) * P_gl[2]]
     f_gl_log = np.log(f_gl[0] + f_gl[1] + f_gl[2])
-    W_l_obs[s_index] = f_gl_log
+    W_l_obs_list[s_index] = f_gl_log
     # Getting the total depth
     Dl = AD[s,2*i] + AD[s,2*i+1]
     for Aa in np.arange(Dl+1):
