@@ -7,7 +7,7 @@ from libc.math cimport log
 
 # Calculate zscore
 # L is the reader_cy read beagle file, matrix M x (2 * N)
-cpdef expected_W_l(float[:,::1] L, int[::1] L_keep, float[:,::1] A, long[:,::1] AD, int[:,::1] AD_array, float[:,::1] AD_factorial, float[:,::1] AD_like, int[:,::1] AD_index, int t, int i, int k, float[::1] W_l_obs_list, float[::1] W_l):
+cpdef expected_W_l(float[:,::1] L, int[::1] L_keep, float[:,::1] A, int[:,::1] AD, int[:,::1] AD_array, float[:,::1] AD_factorial, float[:,::1] AD_like, int[:,::1] AD_index, int t, int i, int k, float[::1] W_l_obs_list, float[::1] W_l):
     cdef int m = L.shape[0]
     cdef int s, s_index, Dl, Aa, Ar, ad_index
     cdef float A_sk, P_gl0, P_gl1, P_gl2, f_gl0, f_gl1, f_gl2, f_gl_log
