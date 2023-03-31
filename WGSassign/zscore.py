@@ -92,7 +92,7 @@ def get_expected_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, AD_index
   #     W_l[s_index] = W_l[s_index] + f_gl_log * P_gl[0] * AD_factorial[ad_index,0] * AD_like[ad_index,0]
   #     W_l[s_index] = W_l[s_index] + f_gl_log * P_gl[1] * AD_factorial[ad_index,1] * AD_like[ad_index,1]
   #     W_l[s_index] = W_l[s_index] + f_gl_log * P_gl[2] * AD_factorial[ad_index,2] * AD_like[ad_index,2]
-  W_l_obs = np.sum(W_l_obs_list, dtype=float)
+  W_l_obs = np.sum(W_l_obs_list, dtype=np.float32)
   return W_l_obs, W_l
 
 def get_var_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, W_l, t, i, k):
