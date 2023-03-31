@@ -12,7 +12,7 @@ def AD_summary(L, AD, i, n_threshold):
   AD_GL_dict = {}
   for s in np.arange(AD.shape[0]):
     # The key is the allele depth combination
-    key = str([AD[s,2*i], AD[s,2*i+1]])
+    key = tuple([AD[s,2*i], AD[s,2*i+1]])
     if key not in AD_GL_dict.keys():
       AD_GL_dict[key] = [[L[s,2*i], L[s,2*i+1], (1 - L[s,2*i] - L[s,2*i])]]
     else:
@@ -29,8 +29,8 @@ def AD_summary(L, AD, i, n_threshold):
     AD_summary_array[j,:] = [a1, a2, a1+a2, n_loci]
   AD_filtered = AD_summary_array[(AD_summary_array[:,3] > n_threshold) & (AD_summary_array[:,2] != 0)]
   dict_sum = AD_filtered[:,0] + AD_filtered[:,1]
-  dl_keep = dl[dl < dl_counts]
   dl, dl_counts = np.unique(dict_sum, return_counts=True)
+  dl_keep = dl[dl < dl_counts]
   AD_array = AD_filtered[np.in1d(AD_filtered[:,2], dl_keep)]
     
   return AD_summary_dict, AD_array
@@ -44,7 +44,7 @@ def get_L_keep(L, AD, AD_summary_dict, AD_array, i):
     if observed_A != 1:
       L_keep[s] = 0
     else:
-      key = str([AD[s,2*i], AD[s,2*i+1]])
+      key = tuple([AD[s,2*i], AD[s,2*i+1]])
       max_id = np.argwhere(AD_summary_dict[key][1] == np.max(AD_summary_dict[key][1]))[0][0]
       L_ind_full = [L[s,2*i], L[s,2*i+1], (1 - L[s,2*i] - L[s,2*i])]
       if np.abs(AD_summary_dict[key][1][max_id] - L_ind_full[max_id]) > 0.01:
