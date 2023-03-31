@@ -6,7 +6,7 @@ __author__ = "Matt DeSaix"
 
 # libraries
 import numpy as np
-# from WGSassign import fisher_cy
+from WGSassign import fisher_cy
 
 def fisher_obs(L, af, IDs, t):
   # Number of loci
