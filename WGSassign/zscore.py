@@ -95,7 +95,7 @@ def get_expected_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, AD_index
   W_l_obs = np.sum(W_l_obs_list, dtype=np.float32)
   return W_l_obs, W_l
 
-def get_var_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, W_l, t, i, k):
+def get_var_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, AD_index, W_l, t, i, k):
   var_W_l = np.zeros(L_keep.shape[0], dtype = np.float32)
   zscore_cy.variance_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, AD_index, t, i, k, var_W_l, W_l)
   # for s_index in range(L_keep.shape[0]):
