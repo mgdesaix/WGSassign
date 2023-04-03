@@ -275,7 +275,7 @@ def main():
 	    print("Finished individual " + str(i))
 	    print("Loci used: " + str(loci_kept))
 	    print("Z-score: " + str(z_tmp))
-	    z_out[i,0] = z_tmp
+	    z_out[i-ind_start,0] = z_tmp
 	  np.savetxt(args.out + ".z_ind.txt", z_out, fmt="%.7f")
 	  print("Saved " + str(full_n) + " individual z-scores as " + str(args.out) + \
 	       ".z_ind.txt (text)")
