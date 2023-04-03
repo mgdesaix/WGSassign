@@ -28,6 +28,7 @@ def AD_summary(L, AD, i, n_threshold):
     n_loci = AD_summary_dict[key][0]
     AD_summary_array[j,:] = [a1, a2, a1+a2, n_loci]
   AD_filtered = AD_summary_array[(AD_summary_array[:,3] > n_threshold) & (AD_summary_array[:,2] != 0)]
+  assert( AD_filtered.shape[0] > 0), "No loci were kept! Too stringent filtering?"
   dict_sum = AD_filtered[:,0] + AD_filtered[:,1]
   dl, dl_counts = np.unique(dict_sum, return_counts=True)
   dl_keep = dl[dl < dl_counts]

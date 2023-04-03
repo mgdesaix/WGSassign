@@ -65,8 +65,12 @@ parser.add_argument("--get_z_score", action="store_true",
   help="Calculate z-score for individuals")
 parser.add_argument("--ind_ad_file", metavar="FILE",
 	help="Filepath to individual allele depths")
-parser.add_argument("--allele_count_threshold", metavar="INT", type=int, default=1000,
-	help="Minimum number of loci needed to keep a specific allele count combination (1000)")
+parser.add_argument("--allele_count_threshold", metavar="INT", type=int,
+	help="Minimum number of loci needed to keep a specific allele count combination")
+# parser.add_argument("--loci_frac_threshold", metavar="INT", type=int,
+# 	help="Minimum fraction of total loci needed to keep a specific allele count combination")
+parser.add_argument("--ind_start", metavar="INT", type=int,
+	help="Start analysis at this individual index (0-index: i.e. 0 starts with the 1st individual)")
 
 # Mixture proportions
 parser.add_argument("--pop_like", metavar="FILE",
@@ -245,11 +249,22 @@ def main():
 	  n = L.shape[1] // 2
 	  # Check number of individuals from beagle is same as reference file
 	  assert (n == IDs.shape[0]), "Number of individuals in beagle and reference ID file do not match!"
-	  z_out = np.empty((n, 1), dtype = np.float32)
-	  for i in range(n):
+	  if args.allele_count_threshold is not None:
+	    assert (args.allele_count_threshold >= 0), "Allele count threshold needs to be greater than/equal to 0!"
+	    allele_count_threshold = args.allele_count_threshold
+	  else:
+	    allele_count_threshold = 0
+	  if args.ind_start is not None:
+	    assert (args.ind_start > 0 and args.ind_start <= n), "Start individual index needs to be within range of number of individuals!"
+	    ind_start = args.ind_start
+	  else:
+	    ind_start = 0
+	  n_sub = n - ind_start
+	  z_out = np.empty((n_sub, 1), dtype = np.float32)
+	  for i in range(ind_start, n):
 	    pop_key = IDs[i,1]
 	    k = np.argwhere(pops == pop_key)[0][0]
-	    AD_summary_dict, AD_array = zscore.AD_summary(L, AD, i, args.allele_count_threshold)
+	    AD_summary_dict, AD_array = zscore.AD_summary(L, AD, i, allele_count_threshold)
 	    L_keep, loci_kept = zscore.get_L_keep(L, AD, AD_summary_dict, AD_array, i)
 	    AD_factorial, AD_like, AD_index = zscore.get_factorials(AD_array, AD_summary_dict, 0.01)
 	    W_l_obs, W_l = zscore.get_expected_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, AD_index, args.threads, i, k)
@@ -262,7 +277,7 @@ def main():
 	    print("Z-score: " + str(z_tmp))
 	    z_out[i,0] = z_tmp
 	  np.savetxt(args.out + ".z_ind.txt", z_out, fmt="%.7f")
-	  print("Saved individual z-scores as " + str(args.out) + \
+	  print("Saved " + str(full_n) + " individual z-scores as " + str(args.out) + \
 	       ".z_ind.txt (text)")
 	  
 	############################################################################  
