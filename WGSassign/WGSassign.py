@@ -67,10 +67,12 @@ parser.add_argument("--ind_ad_file", metavar="FILE",
 	help="Filepath to individual allele depths")
 parser.add_argument("--allele_count_threshold", metavar="INT", type=int,
 	help="Minimum number of loci needed to keep a specific allele count combination")
-# parser.add_argument("--loci_frac_threshold", metavar="INT", type=int,
-# 	help="Minimum fraction of total loci needed to keep a specific allele count combination")
+parser.add_argument("--loci_frac_threshold", metavar="FLOAT", type=float,
+	help="Minimum fraction of total loci needed to keep a specific allele count combination")
 parser.add_argument("--ind_start", metavar="INT", type=int,
 	help="Start analysis at this individual index (0-index: i.e. 0 starts with the 1st individual)")
+parser.add_argument("--ind_end", metavar="INT", type=int,
+	help="End analysis at this individual index (0-index: i.e. If you have 10 individuals, 9 is the 10th individual)")
 
 # Mixture proportions
 parser.add_argument("--pop_like", metavar="FILE",
@@ -254,14 +256,22 @@ def main():
 	    allele_count_threshold = args.allele_count_threshold
 	  else:
 	    allele_count_threshold = 0
+	  if args.loci_frac_threshold is not None:
+	    assert (args.loci_frac_threshold >= 0), "Loci fraction threshold needs to be greater than/equal to 0!"
+	    allele_count_threshold = args.loci_frac_threshold * L.shape[0]
 	  if args.ind_start is not None:
 	    assert (args.ind_start > 0 and args.ind_start <= n), "Start individual index needs to be within range of number of individuals!"
 	    ind_start = args.ind_start
 	  else:
 	    ind_start = 0
-	  n_sub = n - ind_start
+	  if args.ind_end is not None:
+	    assert (args.ind_end > 0 and args.ind_end <= n), "End individual index needs to be within range of number of individuals!"
+	    ind_end = args.ind_end
+	  else:
+	    ind_end = n
+	  n_sub = ind_end - ind_start
 	  z_out = np.empty((n_sub, 1), dtype = np.float32)
-	  for i in range(ind_start, n):
+	  for i in range(ind_start, ind_end):
 	    pop_key = IDs[i,1]
 	    k = np.argwhere(pops == pop_key)[0][0]
 	    AD_summary_dict, AD_array = zscore.AD_summary(L, AD, i, allele_count_threshold)
