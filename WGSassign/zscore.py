@@ -27,7 +27,7 @@ def AD_summary(L, AD, i, n_threshold, single_read_threshold):
     a2 = list(list(AD_summary_dict.keys())[j])[1]
     n_loci = AD_summary_dict[key][0]
     AD_summary_array[j,:] = [a1, a2, a1+a2, n_loci]
-  if args.single_read_threshold:
+  if single_read_threshold:
     AD_filtered = AD_summary_array[AD_summary_array[:,2] == 1]
   else:
     AD_filtered = AD_summary_array[(AD_summary_array[:,3] > n_threshold) & (AD_summary_array[:,2] != 0)]
