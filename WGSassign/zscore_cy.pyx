@@ -51,8 +51,8 @@ cpdef variance_W_l(float[:,::1] L, int[::1] L_keep, float[:,::1] A, int[:,::1] A
                 for Aa in range(Dl+1):
                     Ar = Dl - Aa
                     ad_index = AD_index[Aa, Ar]
-                    var_W_l[s_index] = var_W_l[s_index] + (W_l[s_index] - AD_like[ad_index,0])**2 * P_gl0 * AD_factorial[ad_index,0] * 1
-                    var_W_l[s_index] = var_W_l[s_index] + (W_l[s_index] - AD_like[ad_index,1])**2 * P_gl1 * AD_factorial[ad_index,1] * 1
-                    var_W_l[s_index] = var_W_l[s_index] + (W_l[s_index] - AD_like[ad_index,2])**2 * P_gl2 * AD_factorial[ad_index,2] * 1                   
+                    var_W_l[s_index] = var_W_l[s_index] + (W_l[s_index] - AD_like[ad_index,0] * P_gl0 * AD_factorial[ad_index,0] * 1)**2
+                    var_W_l[s_index] = var_W_l[s_index] + (W_l[s_index] - AD_like[ad_index,1] * P_gl1 * AD_factorial[ad_index,1] * 1)**2
+                    var_W_l[s_index] = var_W_l[s_index] + (W_l[s_index] - AD_like[ad_index,2] * P_gl2 * AD_factorial[ad_index,2] * 1)**2                   
                     
                     
