@@ -67,8 +67,8 @@ parser.add_argument("--ind_ad_file", metavar="FILE",
 	help="Filepath to individual allele depths")
 parser.add_argument("--allele_count_threshold", metavar="INT", type=int,
 	help="Minimum number of loci needed to keep a specific allele count combination")
-parser.add_argument("--loci_frac_threshold", metavar="FLOAT", type=float,
-	help="Minimum fraction of total loci needed to keep a specific allele count combination")
+parser.add_argument("--single_read_threshold", action="store_true",
+	help="Use only loci with a single read. Helpful for computational efficiency when individuals's sequencing depths vary.")
 parser.add_argument("--ind_start", metavar="INT", type=int,
 	help="Start analysis at this individual index (0-index: i.e. 0 starts with the 1st individual)")
 parser.add_argument("--ind_end", metavar="INT", type=int,
@@ -256,9 +256,6 @@ def main():
 	    allele_count_threshold = args.allele_count_threshold
 	  else:
 	    allele_count_threshold = 0
-	  if args.loci_frac_threshold is not None:
-	    assert (args.loci_frac_threshold >= 0), "Loci fraction threshold needs to be greater than/equal to 0!"
-	    allele_count_threshold = args.loci_frac_threshold * L.shape[0]
 	  if args.ind_start is not None:
 	    assert (args.ind_start > 0 and args.ind_start <= n), "Start individual index needs to be within range of number of individuals!"
 	    ind_start = args.ind_start
@@ -274,7 +271,7 @@ def main():
 	  for i in range(ind_start, ind_end):
 	    pop_key = IDs[i,1]
 	    k = np.argwhere(pops == pop_key)[0][0]
-	    AD_summary_dict, AD_array = zscore.AD_summary(L, AD, i, allele_count_threshold)
+	    AD_summary_dict, AD_array = zscore.AD_summary(L, AD, i, allele_count_threshold, args.single_read_threshold)
 	    L_keep, loci_kept = zscore.get_L_keep(L, AD, AD_summary_dict, AD_array, i)
 	    AD_factorial, AD_like, AD_index = zscore.get_factorials(AD_array, AD_summary_dict, 0.01)
 	    W_l_obs, W_l = zscore.get_expected_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, AD_index, args.threads, i, k)

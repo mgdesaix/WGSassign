@@ -8,7 +8,7 @@ __author__ = "Matt DeSaix"
 import numpy as np
 from WGSassign import zscore_cy
 
-def AD_summary(L, AD, i, n_threshold):
+def AD_summary(L, AD, i, n_threshold, single_read_threshold):
   AD_GL_dict = {}
   for s in np.arange(AD.shape[0]):
     # The key is the allele depth combination
@@ -27,8 +27,12 @@ def AD_summary(L, AD, i, n_threshold):
     a2 = list(list(AD_summary_dict.keys())[j])[1]
     n_loci = AD_summary_dict[key][0]
     AD_summary_array[j,:] = [a1, a2, a1+a2, n_loci]
-  AD_filtered = AD_summary_array[(AD_summary_array[:,3] > n_threshold) & (AD_summary_array[:,2] != 0)]
-  assert( AD_filtered.shape[0] > 0), "No loci were kept! Too stringent filtering?"
+  if args.single_read_threshold:
+    AD_filtered = AD_summary_array[AD_summary_array[:,2] == 1]
+  else:
+    AD_filtered = AD_summary_array[(AD_summary_array[:,3] > n_threshold) & (AD_summary_array[:,2] != 0)]
+  assert( AD_filtered.shape[0] != 0), "No loci were kept! Too stringent filtering?"
+  assert( AD_filtered.shape[0] != 1), "Not enough loci were kept! Too stringent filtering?"
   dict_sum = AD_filtered[:,0] + AD_filtered[:,1]
   dl, dl_counts = np.unique(dict_sum, return_counts=True)
   dl_keep = dl[dl < dl_counts]
