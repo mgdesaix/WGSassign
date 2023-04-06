@@ -280,6 +280,9 @@ def main():
 	    z_var = np.sum(var_W_l_array)
 	    z_tmp = (W_l_obs - z_mu) / np.sqrt(z_var)
 	    print("Finished individual " + str(i))
+	    print("z_mu: " + str(z_mu))
+	    print("z_var: " + str(z_var))
+	    print("z_obs: " + str(W_l_obs))
 	    print("Loci used: " + str(loci_kept))
 	    print("Z-score: " + str(z_tmp))
 	    z_out[i-ind_start,0] = z_tmp
