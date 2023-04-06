@@ -14,9 +14,9 @@ def AD_summary(L, AD, i, n_threshold, single_read_threshold):
     # The key is the allele depth combination
     key = tuple([AD[s,2*i], AD[s,2*i+1]])
     if key not in AD_GL_dict.keys():
-      AD_GL_dict[key] = [[L[s,2*i], L[s,2*i+1], (1 - L[s,2*i] - L[s,2*i])]]
+      AD_GL_dict[key] = [[L[s,2*i], L[s,2*i+1], (1 - L[s,2*i] - L[s,2*i+1])]]
     else:
-      AD_GL_dict[key].append([L[s,2*i], L[s,2*i+1], (1 - L[s,2*i] - L[s,2*i])])
+      AD_GL_dict[key].append([L[s,2*i], L[s,2*i+1], (1 - L[s,2*i] - L[s,2*i+1])])
   AD_summary_dict = {}
   for key, value in AD_GL_dict.items():
     AD_summary_dict[key] = [len(value), np.mean(AD_GL_dict[key], axis = 0)]
