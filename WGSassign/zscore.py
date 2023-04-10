@@ -51,7 +51,7 @@ def get_L_keep(L, AD, AD_summary_dict, AD_array, i):
     else:
       key = tuple([AD[s,2*i], AD[s,2*i+1]])
       max_id = np.argwhere(AD_summary_dict[key][1] == np.max(AD_summary_dict[key][1]))[0][0]
-      L_ind_full = [L[s,2*i], L[s,2*i+1], (1 - L[s,2*i] - L[s,2*i])]
+      L_ind_full = [L[s,2*i], L[s,2*i+1], (1 - L[s,2*i] - L[s,2*i+1])]
       if np.abs(AD_summary_dict[key][1][max_id] - L_ind_full[max_id]) > 0.01:
         L_keep[s] = 0
       else:
