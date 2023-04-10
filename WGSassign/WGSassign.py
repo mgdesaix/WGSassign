@@ -350,7 +350,7 @@ def main():
 	    AD_summary_dict, AD_array = zscore.AD_summary(L, AD, i, allele_count_threshold, args.single_read_threshold)
 	    L_keep, loci_kept = zscore.get_L_keep(L, AD, AD_summary_dict, AD_array, i)
 	    AD_factorial, AD_like, AD_index = zscore.get_factorials(AD_array, AD_summary_dict, 0.01)
-	    af_pop = A[L_keep,:][:,k].reshape(-1)
+	    af_pop = np.ascontiguousarray(A[L_keep,:][:,k].reshape(-1))
 	    W_l_obs, W_l_array = zscore.get_expected_W_l(L, L_keep, af_pop, AD, AD_array, AD_factorial, AD_like, AD_index, args.threads, i)
 	    var_W_l_array = zscore.get_var_W_l(L, L_keep, af_pop, AD, AD_array, AD_factorial, AD_like, AD_index, W_l_array, args.threads, i)
 	    z_mu = np.sum(W_l_array)
