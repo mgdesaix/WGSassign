@@ -14,7 +14,8 @@ cpdef expected_W_l(float[:,::1] L, int[::1] L_keep, float[:,::1] A, int[:,::1] A
     with nogil:
             for s_index in prange(m, num_threads=t):
                 s = L_keep[s_index]
-                A_sk = A[s,k]
+                A_sk = A[s_index] # af vector of subset loci, not full matrix
+                # A_sk = A[s,k]
                 P_gl0 = (1-A_sk)*(1-A_sk)
                 P_gl1 = 2*(1-A_sk)*A_sk
                 P_gl2 = A_sk*A_sk
@@ -40,7 +41,8 @@ cpdef variance_W_l(float[:,::1] L, int[::1] L_keep, float[:,::1] A, int[:,::1] A
     with nogil:
             for s_index in prange(m, num_threads=t):
                 s = L_keep[s_index]
-                A_sk = A[s,k]
+                A_sk = A[s_index] # af vector of subset loci, not full matrix
+                # A_sk = A[s,k]
                 P_gl0 = (1-A_sk)*(1-A_sk)
                 P_gl1 = 2*(1-A_sk)*A_sk
                 P_gl2 = A_sk*A_sk

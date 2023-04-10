@@ -61,7 +61,9 @@ parser.add_argument("--loo", action="store_true",
 	help="Perform leave-one-out cross validation")
 
 # z-score
-parser.add_argument("--get_z_score", action="store_true", 
+parser.add_argument("--get_assignment_z_score", action="store_true", 
+  help="Calculate z-score for individuals")
+parser.add_argument("--get_reference_z_score", action="store_true", 
   help="Calculate z-score for individuals")
 parser.add_argument("--ind_ad_file", metavar="FILE",
 	help="Filepath to individual allele depths")
@@ -230,7 +232,85 @@ def main():
 	       ".pop_like.txt (text)")
 	############################################################################
 	# Z-score
-	if args.get_z_score:
+	if args.get_reference_z_score:
+	  # read in data
+	  # Reference pop IDs
+	  print("Parsing population ID file.")
+	  assert os.path.isfile(args.pop_af_IDs), "Population ID file does not exist!!"
+	  IDs = np.loadtxt(args.pop_af_IDs, delimiter = "\t", dtype = "str")
+	  # Reference pop allele frequencies
+	  print("Parsing population allele frequency file.")
+	  assert os.path.isfile(args.pop_af_file), "Population allele frequency file does not exist!!"
+	  A = np.load(args.pop_af_file)
+	  # Reference pop allele depths
+	  print("Parsing individual allele depths file.")
+	  assert os.path.isfile(args.ind_ad_file), "Individual allele depths file does not exist!"
+	  AD = np.load(args.ind_ad_file)
+	  
+	  # Unique reference pop names
+	  pops = np.unique(IDs[:,1])
+	  # number of individuals from beagle
+	  n = L.shape[1] // 2
+	  # Check number of individuals from beagle is same as reference file
+	  assert (n == IDs.shape[0]), "Number of individuals in beagle and reference ID file do not match!"
+	  if args.allele_count_threshold is not None:
+	    assert (args.allele_count_threshold >= 0), "Allele count threshold needs to be greater than/equal to 0!"
+	    allele_count_threshold = args.allele_count_threshold
+	  else:
+	    allele_count_threshold = 0
+	  if args.ind_start is not None:
+	    assert (args.ind_start > 0 and args.ind_start <= n), "Start individual index needs to be within range of number of individuals!"
+	    ind_start = args.ind_start
+	  else:
+	    ind_start = 0
+	  if args.ind_end is not None:
+	    assert (args.ind_end > 0 and args.ind_end <= n), "End individual index needs to be within range of number of individuals!"
+	    ind_end = args.ind_end
+	  else:
+	    ind_end = n
+	  n_sub = ind_end - ind_start
+	  z_out = np.empty((n_sub, 1), dtype = np.float32)
+	  for i in range(ind_start, ind_end):
+	    i_key = IDs[i,1]
+	    k = np.argwhere(pops == i_key)[0][0]
+	    AD_summary_dict, AD_array = zscore.AD_summary(L, AD, i, allele_count_threshold, args.single_read_threshold)
+	    L_keep, loci_kept = zscore.get_L_keep(L, AD, AD_summary_dict, AD_array, i)
+	    AD_factorial, AD_like, AD_index = zscore.get_factorials(AD_array, AD_summary_dict, 0.01)
+	    # leave one out allele frequency calculation for reference
+	    pop_index = np.argwhere(IDs[:,1] == i_pop)
+	    pop_index_except = pop_index[pop_index != i]
+	    L1 = pop_index_except * 2
+	    L2 = L1 + 1
+	    L_cat = np.concatenate((L1, L2))
+	    L_cat_index = np.sort(L_cat, axis = 0).reshape(-1)
+	    L_pop = np.ascontiguousarray(L[L_keep,L_cat_index])
+	    af_pop = emMAF.emMAF(L_pop, maf_iter, maf_tole, t)
+	    n_pop = L_pop.shape[1] // 2
+	    min_val = 1 / (2 * (n_pop + 1))
+	    max_val = 1 - min_val
+	    af_pop[af_pop < min_val] = min_val
+	    af_pop[af_pop > max_val] = max_val
+	    # continue with new allele frequencies
+	    W_l_obs, W_l_array = zscore.get_expected_W_l(L, L_keep, af_pop, AD, AD_array, AD_factorial, AD_like, AD_index, args.threads, i, k)
+	    var_W_l_array = zscore.get_var_W_l(L, L_keep, af_pop, AD, AD_array, AD_factorial, AD_like, AD_index, W_l_array, args.threads, i, k)
+	    z_mu = np.sum(W_l_array)
+	    z_var = np.sum(var_W_l_array)
+	    z_tmp = (W_l_obs - z_mu) / np.sqrt(z_var)
+	    print("Finished individual " + str(i))
+	    # print(AD_factorial)
+	    # print(AD_like)
+	    # print(AD_index)
+	    print("z_mu: " + str(z_mu))
+	    print("z_var: " + str(z_var))
+	    print("z_obs: " + str(W_l_obs))
+	    print("Loci used: " + str(loci_kept))
+	    print("Z-score: " + str(z_tmp))
+	    z_out[i-ind_start,0] = z_tmp
+	  np.savetxt(args.out + ".reference_z_ind.txt", z_out, fmt="%.7f")
+	  print("Saved " + str(n_sub) + " individual z-scores as " + str(args.out) + \
+	       ".reference_z_ind.txt (text)")
+	
+	if args.get_assignment_z_score:
 	  # read in data
 	  # Reference pop IDs
 	  print("Parsing population ID file.")
@@ -280,9 +360,6 @@ def main():
 	    z_var = np.sum(var_W_l_array)
 	    z_tmp = (W_l_obs - z_mu) / np.sqrt(z_var)
 	    print("Finished individual " + str(i))
-	    # print(AD_factorial)
-	    # print(AD_like)
-	    # print(AD_index)
 	    print("z_mu: " + str(z_mu))
 	    print("z_var: " + str(z_var))
 	    print("z_obs: " + str(W_l_obs))

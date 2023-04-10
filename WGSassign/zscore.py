@@ -71,9 +71,9 @@ def get_factorials(AD_array, AD_summary_dict, e):
     AD_index[Ar, Aa] = ad_index
     Dl = Aa + Ar
     ad_factorial = np.math.factorial(Dl) / (np.math.factorial(Aa)*np.math.factorial(Ar))
-    P_r_a0 = ad_factorial*((1-e)**Ar)*(e**Aa)
-    P_r_a1 = ad_factorial*((1/2)**Dl)
-    P_r_a2 = ad_factorial*((1-e)**Aa)*(e**Ar)
+    P_r_a0 = ad_factorial*((1.0-e)**Ar)*(e**Aa)
+    P_r_a1 = ad_factorial*((0.5)**Dl)
+    P_r_a2 = ad_factorial*((1.0-e)**Aa)*(e**Ar)
     AD_factorial[i,:] = [P_r_a0, P_r_a1, P_r_a2]
     AD_like[i:] = AD_summary_dict[tuple([Ar, Aa])][1]
   return AD_factorial, AD_like, AD_index
