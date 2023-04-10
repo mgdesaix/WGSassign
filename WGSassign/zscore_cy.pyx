@@ -7,7 +7,7 @@ from libc.math cimport log
 
 # Calculate zscore
 # L is the reader_cy read beagle file, matrix M x (2 * N)
-cpdef expected_W_l(float[:,::1] L, int[::1] L_keep, float[::1] A, int[:,::1] AD, int[:,::1] AD_array, float[:,::1] AD_factorial, float[:,::1] AD_like, int[:,::1] AD_index, int t, int i, int k, float[::1] W_l_obs_array, float[::1] W_l_array):
+cpdef expected_W_l(float[:,::1] L, int[::1] L_keep, float[::1] A, int[:,::1] AD, int[:,::1] AD_array, float[:,::1] AD_factorial, float[:,::1] AD_like, int[:,::1] AD_index, int t, int i, float[::1] W_l_obs_array, float[::1] W_l_array):
     cdef int m = L_keep.shape[0]
     cdef int s, s_index, Dl, Aa, Ar, ad_index
     cdef float A_sk, P_gl0, P_gl1, P_gl2, f_gl0, f_gl1, f_gl2, f_gl_log, f_gl_log_exp
@@ -34,7 +34,7 @@ cpdef expected_W_l(float[:,::1] L, int[::1] L_keep, float[::1] A, int[:,::1] AD,
                     W_l_array[s_index] = W_l_array[s_index] + f_gl_log_exp * P_gl2 * AD_factorial[ad_index,2] * 1
                     
                     
-cpdef variance_W_l(float[:,::1] L, int[::1] L_keep, float[::1] A, int[:,::1] AD, int[:,::1] AD_array, float[:,::1] AD_factorial, float[:,::1] AD_like, int[:,::1] AD_index, int t, int i, int k, float[::1] var_W_l_array, float[::1] W_l_array):
+cpdef variance_W_l(float[:,::1] L, int[::1] L_keep, float[::1] A, int[:,::1] AD, int[:,::1] AD_array, float[:,::1] AD_factorial, float[:,::1] AD_like, int[:,::1] AD_index, int t, int i, float[::1] var_W_l_array, float[::1] W_l_array):
     cdef int m = L_keep.shape[0]
     cdef int s, s_index, Dl, Aa, Ar, ad_index
     cdef float A_sk, P_gl0, P_gl1, P_gl2, f_gl_log_exp

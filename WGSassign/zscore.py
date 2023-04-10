@@ -78,10 +78,10 @@ def get_factorials(AD_array, AD_summary_dict, e):
     AD_like[i:] = AD_summary_dict[tuple([Ar, Aa])][1]
   return AD_factorial, AD_like, AD_index
 
-def get_expected_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, AD_index, t, i, k):
+def get_expected_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, AD_index, t, i):
   W_l_obs_array = np.zeros(L_keep.shape[0], dtype = np.float32)
   W_l_array = np.zeros(L_keep.shape[0], dtype = np.float32)
-  zscore_cy.expected_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, AD_index, t, i, k, W_l_obs_array, W_l_array)
+  zscore_cy.expected_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, AD_index, t, i, W_l_obs_array, W_l_array)
   # for s_index in range(L_keep.shape[0]):
   #   s = L_keep[s_index]
   #   A_sk = A[s,k]
@@ -100,9 +100,9 @@ def get_expected_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, AD_index
   W_l_obs = np.sum(W_l_obs_array, dtype=np.float32)
   return W_l_obs, W_l_array
 
-def get_var_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, AD_index, W_l_array, t, i, k):
+def get_var_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, AD_index, W_l_array, t, i):
   var_W_l_array = np.zeros(L_keep.shape[0], dtype = np.float32)
-  zscore_cy.variance_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, AD_index, t, i, k, var_W_l_array, W_l_array)
+  zscore_cy.variance_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, AD_index, t, i, var_W_l_array, W_l_array)
   # for s_index in range(L_keep.shape[0]):
   #   s = L_keep[s_index]
   #   A_sk = A[s,k]

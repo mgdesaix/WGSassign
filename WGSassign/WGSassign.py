@@ -267,8 +267,7 @@ def main():
 	  n_sub = ind_end - ind_start
 	  z_out = np.empty((n_sub, 1), dtype = np.float32)
 	  for i in range(ind_start, ind_end):
-	    i_key = IDs[i,1]
-	    k = np.argwhere(pops == i_key)[0][0]
+	    i_pop = IDs[i,1]
 	    AD_summary_dict, AD_array = zscore.AD_summary(L, AD, i, allele_count_threshold, args.single_read_threshold)
 	    L_keep, loci_kept = zscore.get_L_keep(L, AD, AD_summary_dict, AD_array, i)
 	    AD_factorial, AD_like, AD_index = zscore.get_factorials(AD_array, AD_summary_dict, 0.01)
@@ -279,8 +278,8 @@ def main():
 	    L2 = L1 + 1
 	    L_cat = np.concatenate((L1, L2))
 	    L_cat_index = np.sort(L_cat, axis = 0).reshape(-1)
-	    L_pop = np.ascontiguousarray(L[L_keep,L_cat_index])
-	    af_pop = emMAF.emMAF(L_pop, maf_iter, maf_tole, t)
+	    L_pop = np.ascontiguousarray(L[L_keep,:][:,L_cat_index])
+	    af_pop = emMAF.emMAF(L_pop, args.maf_iter, args.maf_tole, args.threads)
 	    n_pop = L_pop.shape[1] // 2
 	    min_val = 1 / (2 * (n_pop + 1))
 	    max_val = 1 - min_val
@@ -288,8 +287,8 @@ def main():
 	    af_pop[af_pop > max_val] = max_val
 	    del L_pop
 	    # continue with new allele frequencies
-	    W_l_obs, W_l_array = zscore.get_expected_W_l(L, L_keep, af_pop, AD, AD_array, AD_factorial, AD_like, AD_index, args.threads, i, k)
-	    var_W_l_array = zscore.get_var_W_l(L, L_keep, af_pop, AD, AD_array, AD_factorial, AD_like, AD_index, W_l_array, args.threads, i, k)
+	    W_l_obs, W_l_array = zscore.get_expected_W_l(L, L_keep, af_pop, AD, AD_array, AD_factorial, AD_like, AD_index, args.threads, i)
+	    var_W_l_array = zscore.get_var_W_l(L, L_keep, af_pop, AD, AD_array, AD_factorial, AD_like, AD_index, W_l_array, args.threads, i)
 	    z_mu = np.sum(W_l_array)
 	    z_var = np.sum(var_W_l_array)
 	    z_tmp = (W_l_obs - z_mu) / np.sqrt(z_var)
@@ -351,8 +350,9 @@ def main():
 	    AD_summary_dict, AD_array = zscore.AD_summary(L, AD, i, allele_count_threshold, args.single_read_threshold)
 	    L_keep, loci_kept = zscore.get_L_keep(L, AD, AD_summary_dict, AD_array, i)
 	    AD_factorial, AD_like, AD_index = zscore.get_factorials(AD_array, AD_summary_dict, 0.01)
-	    W_l_obs, W_l_array = zscore.get_expected_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, AD_index, args.threads, i, k)
-	    var_W_l_array = zscore.get_var_W_l(L, L_keep, A, AD, AD_array, AD_factorial, AD_like, AD_index, W_l_array, args.threads, i, k)
+	    af_pop = A[L_keep,:][:,k].reshape(-1)
+	    W_l_obs, W_l_array = zscore.get_expected_W_l(L, L_keep, af_pop, AD, AD_array, AD_factorial, AD_like, AD_index, args.threads, i)
+	    var_W_l_array = zscore.get_var_W_l(L, L_keep, af_pop, AD, AD_array, AD_factorial, AD_like, AD_index, W_l_array, args.threads, i)
 	    z_mu = np.sum(W_l_array)
 	    z_var = np.sum(var_W_l_array)
 	    z_tmp = (W_l_obs - z_mu) / np.sqrt(z_var)
