@@ -290,6 +290,7 @@ def main():
 	    max_val = 1 - min_val
 	    af_pop[af_pop < min_val] = min_val
 	    af_pop[af_pop > max_val] = max_val
+	    del L_pop
 	    # continue with new allele frequencies
 	    W_l_obs, W_l_array = zscore.get_expected_W_l(L, L_keep, af_pop, AD, AD_array, AD_factorial, AD_like, AD_index, args.threads, i, k)
 	    var_W_l_array = zscore.get_var_W_l(L, L_keep, af_pop, AD, AD_array, AD_factorial, AD_like, AD_index, W_l_array, args.threads, i, k)
