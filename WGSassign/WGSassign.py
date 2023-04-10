@@ -238,10 +238,6 @@ def main():
 	  print("Parsing population ID file.")
 	  assert os.path.isfile(args.pop_af_IDs), "Population ID file does not exist!!"
 	  IDs = np.loadtxt(args.pop_af_IDs, delimiter = "\t", dtype = "str")
-	  # Reference pop allele frequencies
-	  print("Parsing population allele frequency file.")
-	  assert os.path.isfile(args.pop_af_file), "Population allele frequency file does not exist!!"
-	  A = np.load(args.pop_af_file)
 	  # Reference pop allele depths
 	  print("Parsing individual allele depths file.")
 	  assert os.path.isfile(args.ind_ad_file), "Individual allele depths file does not exist!"
