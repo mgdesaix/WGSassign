@@ -48,19 +48,19 @@ parser.add_argument("--get_reference_af", action="store_true",
 parser.add_argument("--pop_names", metavar="FILE",
 	help="Filepath to population names of allele frequency file")
 
-# Individual effective sample size
-parser.add_argument("--ne_obs_ind", action="store_true", 
-  help="Estimate individuals effective sample sizes")
+# Effective sample size and fisher info
+parser.add_argument("--ne_obs", action="store_true", 
+  help="Estimate population and individuals effective sample sizes")
+
+# Leave one out assignment accuracy
+parser.add_argument("--loo", action="store_true",
+	help="Perform leave-one-out cross validation")
 
 # Estimate likelihoods of assignment
 parser.add_argument("--pop_af_file", metavar="FILE",
 	help="Filepath to reference population allele frequencies")
 parser.add_argument("--get_pop_like", action="store_true", 
   help="Estimate log likelihood of individual assignment to each reference population")
-
-# Leave one out assignment accuracy
-parser.add_argument("--loo", action="store_true",
-	help="Perform leave-one-out cross validation")
 
 # z-score
 parser.add_argument("--get_assignment_z_score", action="store_true", 
@@ -197,24 +197,29 @@ def main():
 	       ".pop_names.txt (String: Order of pops for .pop_af.npy, .ne_obs.npy, and fisher_obs.npy files)\n")
 	  
 	  ##  Fisher information
-	  print("Estimating Fisher information.")
-	  f_obs, ne_obs = fisher.fisher_obs(L, af, IDs, args.threads)
-	  np.save(args.out + ".fisher_obs", f_obs)
-	  print("Saved reference population observed Fisher information as " + str(args.out) + \
-	    ".fisher_obs.npy (Binary - np.float32)\n")
-	  np.save(args.out + ".ne_obs", ne_obs)
-	  print("Saved reference population effective sample size estimates as " + str(args.out) + \
-	    ".ne_obs.npy (Binary - np.float32)\n")
-	  print("Column order of populations is: " + str(pops))
-	  
-	  if args.ne_obs_ind:
+	  if args.ne_obs:
+	    print("Estimating Fisher information.")
+	    f_obs, ne_obs = fisher.fisher_obs(L, af, IDs, args.threads)
+	    np.save(args.out + ".fisher_obs", f_obs)
+	    print("Saved reference population observed Fisher information per locus as " + str(args.out) + \
+	      ".fisher_obs.npy (Binary - np.float32)\n")
+	    np.save(args.out + ".ne_obs", ne_obs)
+	    print("Saved reference population effective sample size estimates per locus as " + str(args.out) + \
+	      ".ne_obs.npy (Binary - np.float32)\n")
+	    ne_obs_mean_out = np.empty((2, len(pops)), dtype=np.dtype('U25'))
+	    ne_obs_mean_out[0,:] = pops
+	    ne_obs_mean_out[1,:] = np.mean(ne_obs, axis=0)
+	    np.savetxt(args.out + ".ne_obs.txt", ne_obs_mean_out, fmt="%s")
+	    print("Saved reference population effective sample size estimates as " + str(args.out) + \
+	      ".ne_obs.txt (String - np.U25)\n")
+	    # Individual effective sample sizes
 	    print("Estimating individual effective sample sizes.")
 	    ne_ind_full = fisher.fisher_obs_ind(L, af, IDs, args.threads)
-	    np.savetxt(args.out + ".ne_ind_full.txt", ne_ind_full.reshape(-1,1), fmt="%.7f")
+	    np.savetxt(args.out + ".ne_ind.txt", ne_ind_full.reshape(-1,1), fmt="%.7f")
 	    # ne_ind_df = np.hstack((IDs, ne_ind_full.reshape(-1,1)))
 	    # np.savetxt(args.out + ".ne_obs_ind.txt", ne_ind_df)
 	    print("Save individual effective sample sizes as " + str(args.out) + \
-	        ".ne_ind_full.txt")
+	        ".ne_ind.txt")
 	    
 	  if args.loo:
 	    print("Performing leave-one-out cross validation.")
@@ -326,9 +331,10 @@ def main():
 	  print("Parsing individual allele depths file.")
 	  assert os.path.isfile(args.ind_ad_file), "Individual allele depths file does not exist!"
 	  AD = np.load(args.ind_ad_file)
-	  
+	  assert os.path.isfile(args.pop_names), "Population names file does not exist!!"
+	  pops = np.loadtxt(args.pop_names, dtype="str")
 	  # Unique reference pop names
-	  pops = np.unique(IDs[:,1])
+	  # pops = np.unique(IDs[:,1])
 	  # number of individuals from beagle
 	  n = L.shape[1] // 2
 	  # Check number of individuals from beagle is same as reference file
