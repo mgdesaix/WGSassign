@@ -42,9 +42,11 @@ parser.add_argument("--maf_tole", metavar="FLOAT", type=float, default=1e-4,
 #############################################################3
 # Reference population allele frequencies
 parser.add_argument("--pop_af_IDs", metavar="FILE",
-	help="Filepath to IDs for reference population beagle")
+	help="Filepath to individual IDs and populations for beagle")
 parser.add_argument("--get_reference_af", action="store_true", 
   help="Estimate allele frequencies for reference populations")
+parser.add_argument("--pop_names", metavar="FILE",
+	help="Filepath to population names of allele frequency file")
 
 # Individual effective sample size
 parser.add_argument("--ne_obs_ind", action="store_true", 
@@ -190,6 +192,9 @@ def main():
 	  print("Saved reference population allele frequencies as " + str(args.out) + \
 	       ".pop_af.npy (Binary - np.float32)\n")
 	  print("Column order of populations is: " + str(pops))
+	  np.savetxt(args.out + ".pop_names.txt", pops, fmt="%s")
+	  print("Saved reference population names as " + str(args.out) + \
+	       ".pop_names.txt (String: Order of pops for .pop_af.npy, .ne_obs.npy, and fisher_obs.npy files)\n")
 	  
 	  ##  Fisher information
 	  print("Estimating Fisher information.")
@@ -242,9 +247,10 @@ def main():
 	  print("Parsing individual allele depths file.")
 	  assert os.path.isfile(args.ind_ad_file), "Individual allele depths file does not exist!"
 	  AD = np.load(args.ind_ad_file)
-	  
+	  assert os.path.isfile(args.pop_names), "Population names file does not exist!!"
+	  pops = np.loadtxt(args.pop_names, dtype="str")
 	  # Unique reference pop names
-	  pops = np.unique(IDs[:,1])
+	  # pops = np.unique(IDs[:,1])
 	  # number of individuals from beagle
 	  n = L.shape[1] // 2
 	  # Check number of individuals from beagle is same as reference file
