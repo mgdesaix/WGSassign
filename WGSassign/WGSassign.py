@@ -68,7 +68,7 @@ parser.add_argument("--get_assignment_z_score", action="store_true",
 parser.add_argument("--get_reference_z_score", action="store_true", 
   help="Calculate z-score for individuals")
 parser.add_argument("--ind_ad_file", metavar="FILE",
-	help="Filepath to individual allele depths")
+	help="Filepath to individual allele depths, .txt or .txt.gz")
 parser.add_argument("--allele_count_threshold", metavar="INT", type=int,
 	help="Minimum number of loci needed to keep a specific allele count combination")
 parser.add_argument("--single_read_threshold", action="store_true",
@@ -251,7 +251,7 @@ def main():
 	  # Reference pop allele depths
 	  print("Parsing individual allele depths file.")
 	  assert os.path.isfile(args.ind_ad_file), "Individual allele depths file does not exist!"
-	  AD = np.load(args.ind_ad_file)
+	  AD = np.loadtxt(args.ind_ad_file)
 	  assert os.path.isfile(args.pop_names), "Population names file does not exist!!"
 	  pops = np.loadtxt(args.pop_names, dtype="str")
 	  # Unique reference pop names
@@ -330,7 +330,7 @@ def main():
 	  # Reference pop allele depths
 	  print("Parsing individual allele depths file.")
 	  assert os.path.isfile(args.ind_ad_file), "Individual allele depths file does not exist!"
-	  AD = np.load(args.ind_ad_file)
+	  AD = np.loadtxt(args.ind_ad_file)
 	  assert os.path.isfile(args.pop_names), "Population names file does not exist!!"
 	  pops = np.loadtxt(args.pop_names, dtype="str")
 	  # Unique reference pop names

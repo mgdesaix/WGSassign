@@ -22,4 +22,4 @@ count_majmin_index = np.tile(source_majmin, n_ind)
 count_index = count_ind_index + count_majmin_index
 majmin_counts = np.take_along_axis(raw_counts, count_index, 1).astype(np.int32)
 
-np.save(raw_counts_file + ".majmin.counts.npy", arr = majmin_counts)
+np.savetxt(raw_counts_file + ".majmin.counts.txt.gz", majmin_counts, fmt = "%d")
