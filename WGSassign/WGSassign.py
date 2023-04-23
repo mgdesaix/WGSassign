@@ -68,7 +68,7 @@ parser.add_argument("--get_assignment_z_score", action="store_true",
 parser.add_argument("--get_reference_z_score", action="store_true", 
   help="Calculate z-score for individuals")
 parser.add_argument("--ind_ad_file", metavar="FILE",
-	help="Filepath to individual allele depths, .txt or .txt.gz")
+	help="Filepath to individual allele depths, tab-delimited, .txt or .gz")
 parser.add_argument("--allele_count_threshold", metavar="INT", type=int,
 	help="Minimum number of loci needed to keep a specific allele count combination")
 parser.add_argument("--single_read_threshold", action="store_true",
