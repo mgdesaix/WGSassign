@@ -251,7 +251,7 @@ def main():
 	  # Reference pop allele depths
 	  print("Parsing individual allele depths file.")
 	  assert os.path.isfile(args.ind_ad_file), "Individual allele depths file does not exist!"
-	  AD = np.loadtxt(args.ind_ad_file)
+	  AD = np.loadtxt(args.ind_ad_file, dtype = np.int32)
 	  assert os.path.isfile(args.pop_names), "Population names file does not exist!!"
 	  pops = np.loadtxt(args.pop_names, dtype="str")
 	  # Unique reference pop names
@@ -330,7 +330,7 @@ def main():
 	  # Reference pop allele depths
 	  print("Parsing individual allele depths file.")
 	  assert os.path.isfile(args.ind_ad_file), "Individual allele depths file does not exist!"
-	  AD = np.loadtxt(args.ind_ad_file)
+	  AD = np.loadtxt(args.ind_ad_file, dtype = np.int32)
 	  assert os.path.isfile(args.pop_names), "Population names file does not exist!!"
 	  pops = np.loadtxt(args.pop_names, dtype="str")
 	  # Unique reference pop names
