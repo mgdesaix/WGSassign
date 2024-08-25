@@ -187,6 +187,8 @@ WGSassign --pop_like ./out/nonbreeding/${outname2}.pop_like.txt --pop_like_IDs $
 
 ## Acknowledgements
 
+This study was funded by a Cooperative Agreement with the Alaska Department of Fish and Game (23-011) and an NSF CAREER award (008933-00002) to KCR. This work utilized the Alpine high performance computing resource at the University of Colorado Boulder. Alpine is jointly funded by the University of Colorado Boulder, the University of Colorado Anschutz, Colorado State University, and the National Science Foundation (award 2201538).
+
 This software makes use of the code from [PCAngsd](https://github.com/Rosemeis/pcangsd) for efficiently reading Beagle files and also expectation-maximization estimation of allele frequencies (thank you!). More details regarding the uses of PCangsd can be found in the following publications:
 
 Population structure: [Inferring Population Structure and Admixture Proportions in Low-Depth NGS Data](http://www.genetics.org/content/210/2/719).\
