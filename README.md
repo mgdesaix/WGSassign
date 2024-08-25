@@ -1,7 +1,9 @@
 # WGSassign
 Population assignment methods for whole-genome sequence and genotype likelihood data
 
-WGSassign was developed to conduct standard population assignment methods using genotype likelihood data in Beagle format. This software facilitates the estimation of allele frequencies across reference populations, allows users to perform leave-one-out cross validation with reference populations, and assign individuals of unknown origin to reference populations. See below for descriptions of the functions, and check out my [amre-adaptation](https://github.com/mgdesaix/amre-adaptation) GitHub repository for broader descriptions of WGSassign being used for studying migratory bird populations.
+WGSassign was developed to conduct standard population assignment methods using genotype likelihood data in Beagle format. This software facilitates the estimation of allele frequencies across reference populations, allows users to perform leave-one-out cross validation with reference populations, and assign individuals of unknown origin to reference populations. See below for descriptions of the functions.
+
+For a more in-depth tutorial on using WGSassign with example data sets, as well as the data analysis components in R, see the workshop hands-on materials from ConGen 2024: <https://github.com/mgdesaix/ConGen-2024>
 
 ## Get WGSassign and build
 ### Dependencies
