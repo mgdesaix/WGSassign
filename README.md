@@ -30,7 +30,17 @@ pip3 install -e .
 
 You can now run WGSassign with the `WGSassign` command.
 
-**Note:** WGSassign has only been tested on Linux systems
+**Note:** WGSassign has been tested and used primarily on Linux systems.
+The standard compiler (`clang`) on MacOSX does not support openmp.  To
+compile and use this on MacOSX you can use Homebrew to install gcc and openmp
+and then direct the compiler to use that. Doing so requires setting up some
+C paths, etc, before running the lines.
+```python
+python setup.py build_ext --inplace
+pip3 install -e .
+```
+Setting those paths and running the above lines can all be done within a subshell.
+See the file `./Mac-compile-and-pip-install.sh` for an example. 
 
 ## Usage
 ### Running WGSassign
@@ -40,11 +50,10 @@ Options:
 
 ```
 --% WGSassign
-usage: WGSassign [-h] [-b FILE] [-t INT] [-o OUTPUT] [--maf_iter INT] [--maf_tole FLOAT] [--pop_af_IDs FILE]
-                 [--get_reference_af] [--pop_names FILE] [--ne_obs] [--loo] [--pop_af_file FILE] [--get_pop_like]
-                 [--get_assignment_z_score] [--get_reference_z_score] [--ind_ad_file FILE] [--allele_count_threshold INT]
-                 [--single_read_threshold] [--ind_start INT] [--ind_end INT] [--pop_like FILE] [--pop_like_IDs FILE]
-                 [--get_em_mix] [--get_mcmc_mix] [--mixture_iter INT]
+usage: WGSassign [-h] [-b FILE] [-t INT] [-o OUTPUT] [--maf_iter INT] [--maf_tole FLOAT] [--pop_af_IDs FILE] [--get_reference_af] [--pop_names FILE]
+                 [--ne_obs] [--loo] [--loo_downsampled_beagle FILE] [--pop_af_file FILE] [--get_pop_like] [--get_assignment_z_score]
+                 [--get_reference_z_score] [--ind_ad_file FILE] [--allele_count_threshold INT] [--single_read_threshold] [--ind_start INT]
+                 [--ind_end INT] [--pop_like FILE] [--pop_like_IDs FILE] [--get_em_mix] [--get_mcmc_mix] [--mixture_iter INT]
 
 options:
   -h, --help            show this help message and exit
@@ -61,20 +70,22 @@ options:
   --pop_names FILE      Filepath to population names of allele frequency file
   --ne_obs              Estimate population and individuals effective sample sizes
   --loo                 Perform leave-one-out cross validation
+  --loo_downsampled_beagle FILE
+                        Optional Beagle file of downsampled genotype likelihoods to use for LOO assignment. (To test accuracy when assigned samples
+                        have lower coverage)
   --pop_af_file FILE    Filepath to reference population allele frequencies
   --get_pop_like        Estimate log likelihood of individual assignment to each reference population
   --get_assignment_z_score
                         Calculate z-score for individuals
   --get_reference_z_score
                         Calculate z-score for individuals
-  --ind_ad_file FILE    Filepath to individual allele depths
+  --ind_ad_file FILE    Filepath to individual allele depths, tab-delimited, .txt or .gz
   --allele_count_threshold INT
                         Minimum number of loci needed to keep a specific allele count combination
   --single_read_threshold
                         Use only loci with a single read. Helpful for computational efficiency when individuals's sequencing depths vary.
   --ind_start INT       Start analysis at this individual index (0-index: i.e. 0 starts with the 1st individual)
-  --ind_end INT         End analysis at this individual index (0-index: i.e. If you have 10 individuals, 9 is the 10th
-                        individual)
+  --ind_end INT         End analysis at this individual index (0-index: i.e. If you have 10 individuals, 9 is the 10th individual)
   --pop_like FILE       Filepath to population assignment log likelihood file
   --pop_like_IDs FILE   Filepath to IDs for population assignment log likelihood file
   --get_em_mix          Estimate mixture proportions with EM algorithm
@@ -113,12 +124,53 @@ WGSassign --beagle ${breeding_beagle} --pop_af_IDs ${breeding_IDs} --get_referen
 
 ### Leave-one-out cross validation
 
-Cross-validation is an important technique for determining assignment accuracy, but recalculating allele frequencies each time you remove an individual can be slow. Fortunately, WGSassign is fast enough to provide leave-one-out assignment in a reasonable amount of time even for large of beagle files (ex. 
-~ 5 million SNPs and 180 individuals = 30 min; 600k SNPs and 80 individuals = <1 min). When producing reference population allele frequencies (as described above), you can add `--loo` to specify the calculation of leave-one-out assignment likelihoods for each individual to each reference population. For LOO assignment, the allele frequency of the reference population the individual belongs to is recalculated without the individual, and then the individual is assigned to the different reference populations. The log-likelihoods of LOO assignment are output in a text file with N (individual) rows x K (reference population) columns. 
+Cross-validation is an important technique for determining assignment accuracy, but
+recalculating allele frequencies each time you remove an individual can be slow.
+Fortunately, WGSassign is fast enough to provide leave-one-out assignment in a
+reasonable amount of time even for large of beagle files (ex. ~ 5 million
+SNPs and 180 individuals = 30 min; 600k SNPs and 80 individuals = <1 min).
+When producing reference population allele frequencies (as described above),
+you can add `--loo` to specify the calculation of leave-one-out assignment likelihoods
+for each individual to each reference population. For LOO assignment, the allele
+frequency of the reference population the individual belongs to is
+recalculated without the individual, and then the individual is assigned to the
+different reference populations. The log-likelihoods of LOO assignment are output
+in a text file with N (individual) rows x K (reference population) columns. 
 
 ```bash
 WGSassign --beagle ${breeding_beagle} --pop_af_IDs ${breeding_IDs} --get_reference_af --loo --out ${outname} --threads 20
 ```
+
+### Leave-one-out cross validation and test with downsampled GLs for samples being assigned
+
+Once a reference baseline of genotype likelihoods is available, it will often be of interest to know whether
+samples could still be assigned to that reference, even if the samples to be assigned
+were sequenced at much lower depth.  By combining the `--loo_downsampled_beagle FILE` option with
+the `--loo` option you can get the reference allele frequencies estimated from the full-depth
+reference beagle, but when each individual is being assigned back to that using LOO cross-validation,
+the program will use GLs for that individual that were obtained from the FILE given with
+the `--loo_downsampled_beagle` option.  This beagle file could contain genotype likelihoods
+that were obtained using BAMs for all the individuals that had been downsampled to lower
+coverage.  Note that when this is done, some loci might not appear in the downsampled
+data set (even calling using the -sites option in ANGSD---if there are no reads for a site
+in the -sites file, it ain't gonna included in the output!).  WGSassign takes care of this
+problem by removing such sites from the reference.  For this to work, sites must be named
+the same in the reference and downsampled versions of the beagle files.  Note that the
+sample names in the reference beagle file and the downsampled beagle file must also be
+the same and in the same order.
+
+Here is an example of using  `--loo_downsampled_beagle FILE`.  In this case the downsampled beagle file
+is not really from a set of downsampled BAMs---we just removed from sites from it, but it
+shows the call to WGSassign.  
+
+```bash
+breeding_beagle_subsamp=./data/amre.breeding.ind85.ds_2x.sites-filter.top_50_each_subset_80percent_sites.beagle.gz
+
+ WGSassign --beagle ${breeding_beagle} --pop_af_IDs ${breeding_IDs} --get_reference_af --loo --out ${outname} --threads 8 --loo_downsampled_beagle ${breeding_beagle_subsamp}
+```
+
+Note that when you are using `--loo_downsampled_beagle FILE`, the LOO
+output goes into a file with a `pop_like_LOO_downsampled.txt` suffix.
 
 ## Assigning individuals of unknown origin
 

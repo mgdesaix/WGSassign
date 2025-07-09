@@ -43,7 +43,7 @@ def assignLL(L, af, t):
     return logl_mat
 
 # Leave-one-out likelihoods
-def loo(L, af, IDs, t, maf_iter, maf_tole):
+def loo(L, af, IDs, t, maf_iter, maf_tole, downsampled_L=None):
     ## Initiate variables and containers
     # number of loci
     m = L.shape[0]
@@ -55,6 +55,9 @@ def loo(L, af, IDs, t, maf_iter, maf_tole):
     logl_mat = np.zeros((n,k), dtype=np.float32)
     
     print(str(n) + " individuals to assign to " + str(k) + " populations")
+    if downsampled_L is not None:
+        print("Using downsampled GLs for likelihood evaluation in LOO assignment.")
+
     # unique reference pops
     pops = np.unique(IDs[:,1])
     for i in range(n):
@@ -87,8 +90,10 @@ def loo(L, af, IDs, t, maf_iter, maf_tole):
         for j in range(k):
             # set log like vector for individual i to pop j
             logl_vec = np.zeros(m, dtype=np.float32)
+            # choose which GLs to use (for downsampling test option)
+            L_source = downsampled_L if downsampled_L is not None else L
             # fill vector
-            glassy_cy.loglike(L, af, logl_vec, t, i, j)
+            glassy_cy.loglike(L_source, af, logl_vec, t, i, j)
             # loglike sum
             loglike = np.sum(logl_vec, dtype=float)
             # print("Individual " + str(i) + " done for pop " + str(j))
