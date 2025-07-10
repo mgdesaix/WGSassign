@@ -67,6 +67,13 @@ parser.add_argument("--pop_af_file", metavar="FILE",
 	help="Filepath to reference population allele frequencies")
 parser.add_argument("--get_pop_like", action="store_true", 
   help="Estimate log likelihood of individual assignment to each reference population")
+parser.add_argument(
+    '--partition_sites',
+    type=int,
+    metavar="INT",
+    default = 1,
+    help='Optional: partition sites into INT subsets (by modulo) and report assignment log-likelihoods for each subset.'
+)
 
 # z-score
 parser.add_argument("--get_assignment_z_score", action="store_true", 
@@ -268,13 +275,24 @@ def main():
 	    
 	  if args.loo:
 	    print("Performing leave-one-out cross validation.")
-	    logl_mat_loo = glassy.loo(L, af, IDs, args.threads, args.maf_iter, args.maf_tole)
+	    logl_mat_loo, logl_parts_mat_loo = glassy.loo(L, af, IDs, args.threads, args.maf_iter, args.maf_tole, num_partitions = args.partition_sites)
 
 	    suffix = "_downsampled" if L_ds is not None else ""
-	    outfile = f"{args.out}.pop_like_LOO{suffix}.txt"
+	    outfile = f"{args.out}.pop_like_LOO{suffix}.tsv"
+	    partfile = f"{args.out}.pop_like_LOO{suffix}_partitions_{args.partition_sites}.tsv.gz"
 
-	    np.savetxt(outfile, logl_mat_loo, fmt="%.7f")
+	    #np.savetxt(outfile, logl_mat_loo, fmt="%.7f")
+
+	    utils.write_ass_mats(outfile, logl_mat_loo, sample_names, pops, print_part_column = False,
+	    	sample_locations = IDs[:,1], doing_LOO = True)
 	    print(f"Saved leave-one-out cross validation log likelihoods as {outfile}")
+
+
+	    if(args.partition_sites > 1):
+	    	utils.write_ass_mats(partfile, logl_parts_mat_loo, sample_names, pops, partition_count = args.partition_sites, print_part_column = True,
+	    		sample_locations = IDs[:,1], doing_LOO = True)
+	    	print(f"Saved leave-one-out cross validation log likelihoods from partitioned sites as {partfile}")
+
 	    print(f"Column order of populations is: {pops}")
 	  del af
 
