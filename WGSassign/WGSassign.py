@@ -275,7 +275,7 @@ def main():
 	    
 	  if args.loo:
 	    print("Performing leave-one-out cross validation.")
-	    logl_mat_loo, logl_parts_mat_loo = glassy.loo(L, af, IDs, args.threads, args.maf_iter, args.maf_tole, num_partitions = args.partition_sites)
+	    logl_mat_loo, logl_parts_mat_loo = glassy.loo(L, af, IDs, args.threads, args.maf_iter, args.maf_tole, downsampled_L=L_ds, num_partitions = args.partition_sites)
 
 	    suffix = "_downsampled" if L_ds is not None else ""
 	    outfile = f"{args.out}.pop_like_LOO{suffix}.tsv"
