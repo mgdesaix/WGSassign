@@ -10,6 +10,7 @@ import numpy as np
 # Import scripts
 from WGSassign import glassy_cy
 from WGSassign import emMAF
+from WGSassign import utils
 
 # log-likelihoods for assignment
 # L is the GLs from beagle file (M x (N*2))
@@ -43,7 +44,7 @@ def assignLL(L, af, t):
     return logl_mat
 
 # Leave-one-out likelihoods
-def loo(L, af, IDs, t, maf_iter, maf_tole):
+def loo(L, af, IDs, t, maf_iter, maf_tole, downsampled_L=None, num_partitions = 1):
     ## Initiate variables and containers
     # number of loci
     m = L.shape[0]
@@ -53,8 +54,12 @@ def loo(L, af, IDs, t, maf_iter, maf_tole):
     k = af.shape[1]
     # loglike matrix, of n x k (rows = individuals, columns = reference pops)
     logl_mat = np.zeros((n,k), dtype=np.float32)
+    logl_parts_mat = np.zeros((n * num_partitions, k), dtype=np.float32)
     
     print(str(n) + " individuals to assign to " + str(k) + " populations")
+    if downsampled_L is not None:
+        print("Using downsampled GLs for likelihood evaluation in LOO assignment.")
+
     # unique reference pops
     pops = np.unique(IDs[:,1])
     for i in range(n):
@@ -87,14 +92,22 @@ def loo(L, af, IDs, t, maf_iter, maf_tole):
         for j in range(k):
             # set log like vector for individual i to pop j
             logl_vec = np.zeros(m, dtype=np.float32)
+            # choose which GLs to use (for downsampling test option)
+            L_source = downsampled_L if downsampled_L is not None else L
             # fill vector
-            glassy_cy.loglike(L, af, logl_vec, t, i, j)
+            glassy_cy.loglike(L_source, af, logl_vec, t, i, j)
             # loglike sum
+            
             loglike = np.sum(logl_vec, dtype=float)
             # print("Individual " + str(i) + " done for pop " + str(j))
             # print("Log-likelihood: " + str(loglike))
             # fill output matrix
             logl_mat[i,j] = loglike
+
+            # now, deal with partitioning things
+            loglike_parts = utils.partition_loglikes(per_site_ll = logl_vec, partition_count = num_partitions)
+            logl_parts_mat[i * num_partitions : (i + 1) * num_partitions, j] = loglike_parts
+
     del logl_vec
-    return logl_mat
+    return logl_mat, logl_parts_mat
 

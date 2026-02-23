@@ -6,3 +6,4 @@ dependencies:
     - numpy<=1.22.3
     - scipy
     - cython
+    - pandas=1.4.4

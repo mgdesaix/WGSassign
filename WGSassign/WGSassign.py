@@ -56,11 +56,24 @@ parser.add_argument("--ne_obs", action="store_true",
 parser.add_argument("--loo", action="store_true",
 	help="Perform leave-one-out cross validation")
 
+parser.add_argument(
+    '--loo_downsampled_beagle',
+    metavar="FILE",
+    help='Optional Beagle file of downsampled genotype likelihoods to use for LOO assignment. (To test accuracy when assigned samples have lower coverage)'
+)
+
 # Estimate likelihoods of assignment
 parser.add_argument("--pop_af_file", metavar="FILE",
 	help="Filepath to reference population allele frequencies")
 parser.add_argument("--get_pop_like", action="store_true", 
   help="Estimate log likelihood of individual assignment to each reference population")
+parser.add_argument(
+    '--partition_sites',
+    type=int,
+    metavar="INT",
+    default = 1,
+    help='Optional: partition sites into INT subsets (by modulo) and report assignment log-likelihoods for each subset.'
+)
 
 # z-score
 parser.add_argument("--get_assignment_z_score", action="store_true", 
@@ -106,6 +119,11 @@ def main():
 	# assert (args.beagle is not None) or (args.plink is not None), \
 	# 		"Please provide input data (args.beagle or args.plink)!"
 
+	# small option checks
+	if args.loo_downsampled_beagle and not args.loo:
+ 		raise ValueError("The --loo_downsampled_beagle option requires that --loo is also specified.")
+
+
 	# Create log-file of arguments
 	full = vars(parser.parse_args())
 	deaf = vars(parser.parse_args([]))
@@ -138,16 +156,50 @@ def main():
 	from WGSassign import fisher
 	from WGSassign import reader_cy
 	from WGSassign import zscore
+	from WGSassign import utils
 
 	# Parse data
 	if args.beagle is not None:
 		print("Parsing Beagle file.")
 		assert os.path.isfile(args.beagle), "Beagle file doesn't exist!"
-		L = reader_cy.readBeagle(args.beagle)
+		L, sample_names, site_names = reader_cy.readBeagle(args.beagle)
 		m = L.shape[0]
 		n = L.shape[1]//2
 		print("Loaded " + str(m) + " sites and " + str(n) + " individuals.")
-	
+		utils.print_sample_and_site_summary(sample_names, site_names)
+
+
+	# Parse the downsampled data for LOO, if provided
+	if args.loo_downsampled_beagle is not None:
+		print("Parsing the optional downsampled Beagle file.")
+		assert os.path.isfile(args.loo_downsampled_beagle), "Downsampled beagle file doesn't exist!"
+		L_ds, sample_names_ds, site_names_ds = reader_cy.readBeagle(args.loo_downsampled_beagle)
+		m_ds = L.shape[0]
+		n_ds = L.shape[1]//2
+		print("Loaded optional downsampled data set with " + str(m) + " sites and " + str(n) + " individuals.")
+		utils.print_sample_and_site_summary(sample_names_ds, site_names_ds)
+
+		# check for consistency of sample names between reference and ds version of beagle files
+		if sample_names != sample_names_ds:
+			raise ValueError("Sample names in downsampled Beagle file do not match original.")
+
+
+		# retain only the sites in the reference that are in the downsampled set
+		print("Retaining only sites from the reference that are in the downsampled beagle file:")
+		L, site_names = utils.filter_sites_to_common(L, site_names, site_names_ds)
+
+		print("Removing sites from downsampled set that were not in the reference (should not occur...):")
+		L_ds, site_names_ds = utils.filter_sites_to_common(L_ds, site_names_ds, site_names)  # optional reciprocal check
+
+		# Now check if orders match
+		if site_names != site_names_ds:
+			raise ValueError("Site names in full and downsampled Beagle do not match after filtering.")
+	else:
+		L_ds = None
+
+
+
+
 ####################################
   # Reference population allele frequencies
 	if args.get_reference_af:
@@ -223,11 +275,25 @@ def main():
 	    
 	  if args.loo:
 	    print("Performing leave-one-out cross validation.")
-	    logl_mat_loo = glassy.loo(L, af, IDs, args.threads, args.maf_iter, args.maf_tole)
-	    np.savetxt(args.out + ".pop_like_LOO.txt", logl_mat_loo, fmt="%.7f")
-	    print("Save leave-one-out cross validation log likelihoods as " + str(args.out) + \
-	         ".pop_like_LOO.txt")
-	    print("Column order of populations is: " + str(pops))
+	    logl_mat_loo, logl_parts_mat_loo = glassy.loo(L, af, IDs, args.threads, args.maf_iter, args.maf_tole, downsampled_L=L_ds, num_partitions = args.partition_sites)
+
+	    suffix = "_downsampled" if L_ds is not None else ""
+	    outfile = f"{args.out}.pop_like_LOO{suffix}.tsv"
+	    partfile = f"{args.out}.pop_like_LOO{suffix}_partitions_{args.partition_sites}.tsv.gz"
+
+	    #np.savetxt(outfile, logl_mat_loo, fmt="%.7f")
+
+	    utils.write_ass_mats(outfile, logl_mat_loo, sample_names, pops, print_part_column = False,
+	    	sample_locations = IDs[:,1], doing_LOO = True)
+	    print(f"Saved leave-one-out cross validation log likelihoods as {outfile}")
+
+
+	    if(args.partition_sites > 1):
+	    	utils.write_ass_mats(partfile, logl_parts_mat_loo, sample_names, pops, partition_count = args.partition_sites, print_part_column = True,
+	    		sample_locations = IDs[:,1], doing_LOO = True)
+	    	print(f"Saved leave-one-out cross validation log likelihoods from partitioned sites as {partfile}")
+
+	    print(f"Column order of populations is: {pops}")
 	  del af
 
 	# Population assignment likelihood
